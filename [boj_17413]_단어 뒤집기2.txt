@@ -1,0 +1,48 @@
+
+
+#include<iostream>
+#include<string>
+#include<stack>
+using namespace std;
+void print(stack<char>&s) { //스택도 전달 가능하군
+	while (!s.empty()) {
+		cout << s.top();
+		s.pop();
+	}
+
+}
+int main() {
+	string str;
+	getline(cin, str); //한줄 전체 입력받아(띄어쓰기 포함)
+	bool tag = false;
+	stack<char> s;
+	for (char ch : str) {
+		if (ch == '<') {
+			print(s);
+			tag = true;// '<'가 시작됨 알린다
+			cout << ch;
+		}
+		else if (ch == '>') {
+			tag = false;
+			cout << ch;
+		}
+		else if (tag){ //tag가 true면 < >안에 있으므로
+			cout << ch;
+		}
+		else { //<~~> 제외한경우들
+			if (ch == ' ') { //공백있으면 앞에 스택안에 내용 출력
+				print(s);
+				cout << ch;
+			}
+			else {
+				s.push(ch);//스택에 넣는다.
+			}
+		}
+	}
+	print(s);  //마지막에 스택에 남은거 다 배출
+	cout << '\n';
+	return 0;
+}
+
+
+
