@@ -1,0 +1,64 @@
+#include<iostream>
+using namespace std;
+void answer(int n) {
+	if (n == 0) cout << "SUN" << '\n';
+	else if (n == 1) cout << "MON" << "\n";
+	else if (n == 2) cout << "TUE" << "\n";
+	else if (n == 3) cout << "WED" << "\n";
+	else if (n == 4) cout << "THU" << "\n";
+	else if (n == 5) cout << "FRI" << "\n";
+	else if (n == 6) cout << "SAT" << "\n";
+}
+int main() {
+	int x, y, ans;
+	cin >> x >> y;
+	if (x == 1) {
+		ans = y % 7;
+		answer(ans);
+	}
+	else if (x == 2) {
+		ans = (31 + y)%7;
+		answer(ans);
+	}
+	else if (x == 3) {
+		ans = (59 + y) % 7;
+		answer(ans);
+	}
+	else if (x == 4) {
+		ans = (90 + y) % 7;
+		answer(ans);
+	}
+	else if (x == 5) {
+		ans = (120 + y) % 7;
+		answer(ans);
+	}
+	else if (x == 6) {
+		ans = (151 + y) % 7;
+		answer(ans);
+	}
+	else if (x == 7) {
+		ans = (181 + y) % 7;
+		answer(ans);
+	}
+	else if (x == 8) {
+		ans = (212 + y) % 7;
+		answer(ans);
+	}
+	else if (x == 9) {
+		ans = (243 + y) % 7;
+		answer(ans);
+	}
+	else if (x == 10) {
+		ans = (273 + y) % 7;
+		answer(ans);
+	}
+	else if (x == 11) {
+		ans = (304 + y) % 7;
+		answer(ans);
+	}
+	else  {
+		ans = (334 + y) % 7;
+		answer(ans);
+	}
+	return 0;
+}
