@@ -1,0 +1,30 @@
+#include<iostream>
+#include<string>
+#include<stack>
+using namespace std;
+int main() {
+	string a;
+	cin >> a;
+	int n = a.size();
+	stack<int> s;
+	int ans = 0;
+	for (int i = 0; i < n; i++) {
+		if (a[i] == '(') {
+			s.push(i); //괄호가 아니라 숫자를 푸시
+		}
+		else {
+			if (s.top() + 1 == i) { //하나차이 = 레이져
+				s.pop();
+				ans += s.size(); //스택의 양 = 잘린 개수
+			}
+			else {
+				s.pop();
+				ans += 1; //다른 조각은 이미 셈 따라서 +1
+			}
+		}
+	}
+	cout << ans << '\n';
+	return 0;
+
+	return 0;
+}
