@@ -1,0 +1,36 @@
+#include<iostream>
+using namespace std;
+const int MAX = 1000000;
+int prime[MAX];//소수 저장
+int pn;//소수 개수(+인덱스)
+bool check[MAX + 1]; //소수인지 아닌지 체크
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	for (int i = 2; i <= MAX; i++) {//2부터 MAX까지 소수여부 판별ㄱㄱ
+		if (check[i] == false) { //false일 경우 입장
+			prime[pn++] = i; //소수개수추가, 소수리스트에 추가
+			for (int j = i + i; j <= MAX; j+=i) {
+				if (check[j] == false) {
+					check[j] = true; //추가한 소수의 배수는 죄다 소수아님
+				}
+			}
+		}
+	}
+	while (1) {
+		int n;
+		cin >> n;
+		if (!n) {
+			break;
+		}
+		else {
+			for (int i = 1; i < pn; i++) {//pn=0은 제외(2니까)
+				if (check[n - prime[i]] == false) {
+					cout << n << " = " << prime[i] << " + " << n-prime[i] << '\n';
+					break;
+				}
+			}
+		}
+	}
+	return 0;
+}
