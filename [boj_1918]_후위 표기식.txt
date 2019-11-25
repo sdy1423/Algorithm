@@ -1,0 +1,43 @@
+#include<iostream>
+#include<string>
+#include<stack>
+using namespace std;
+int precedence(char c) {
+	if (c == '(') return 0;
+	else if (c == '+' || c == '-') 	return 1;
+	else	return 2;
+}
+int main() {
+	string str,ans;
+	cin >> str;
+	stack<char> st;
+	for (char ch : str) {
+		if (ch >= 'A' && ch <= 'Z') {//알파벳일때
+			ans += ch;
+		}
+		else if (ch == ')') {//)일때
+			while (!st.empty()) {
+				if (st.top() == '(') break;
+				ans += st.top();
+				st.pop();
+			}
+			st.pop();
+		}
+		else if (ch == '(') {
+			st.push(ch);
+		}
+		else {//+ - * / 일때
+			while (!st.empty() && precedence(st.top()) >= precedence(ch)) {
+				ans += st.top();
+				st.pop();
+			}
+				st.push(ch);
+		}
+	}
+	while (!st.empty()) {
+		ans += st.top();
+		st.pop();
+	}
+	cout << ans << '\n';
+	return 0;
+}
