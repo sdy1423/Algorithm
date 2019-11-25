@@ -1,0 +1,13 @@
+//string의 find 사용
+#include<iostream>
+#include<string>
+using namespace std;
+int main() {
+	string input;
+	getline(cin, input);
+	for (char alphabet = 'a'; alphabet <= 'z'; alphabet++) {
+		int index = input.find(alphabet);
+		cout << index << " ";
+	}
+	return 0;
+}
