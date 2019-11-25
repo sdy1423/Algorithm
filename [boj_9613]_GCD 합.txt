@@ -1,0 +1,29 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+int gcd(int a, int b) {
+	if (b == 0) return a;
+	else return gcd(b, a % b);
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	int t, n;
+	cin >> t;
+	while (t--) {
+		//테스트케이스개수
+			cin >> n;
+			long long sum = 0;
+			vector<int> num(n);
+			for (int i = 0; i < n; i++) { //n만큼 입력받기
+				cin >> num[i];
+			}
+			for (int i = 0; i < n - 1; i++) {
+				for (int j = i + 1; j < n; j++) {
+					sum += gcd(num[i], num[j]);
+				}
+			}
+			cout << sum << '\n';
+		}
+		return 0;
+	}
