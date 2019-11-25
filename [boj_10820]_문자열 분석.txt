@@ -1,0 +1,32 @@
+#include<iostream>
+#include<string>
+using namespace std;
+int main() {
+	string str;
+	int cnt1, cnt2, cnt3, cnt4;
+
+	while (1) {
+		cnt1 = 0; cnt2 = 0; cnt3 = 0; cnt4 = 0;
+		//cin.ignore();
+		getline(cin, str);
+		if (str.length() == 0) {
+			break;
+		}
+		for (char ch : str) {
+			if (ch >= 'A' && ch <= 'Z') {
+				cnt1++;
+			}
+			else if (ch >= 'a' && ch <= 'z') {
+				cnt2++;
+			}
+			else if (ch ==' ') {
+				cnt3++;
+			}
+			else if (ch >= '0' && ch <= '9') {
+				cnt4++;
+			}
+		}
+		cout << cnt2 << " " << cnt1 << " " << cnt4 << " " << cnt3 << '\n';
+	}
+	return 0;
+}
