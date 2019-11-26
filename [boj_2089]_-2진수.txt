@@ -1,0 +1,25 @@
+#include<iostream>
+using namespace std;
+void ans(int n) {
+	if (!n) return;
+	if (n % 2 == 0) { //짝수
+		ans(n / (-2));
+		cout << "0";
+	}
+	else {//홀수
+		if (n > 0) {
+			ans(-(n / 2));
+		}
+		else {
+			ans((n / (-2)) + 1);
+		}
+		cout << "1";
+	}
+}
+int main() {
+	int n;
+	cin >> n;
+	if (n == 0) cout << 0 << '\n';
+	else ans(n);
+	return 0;
+}
