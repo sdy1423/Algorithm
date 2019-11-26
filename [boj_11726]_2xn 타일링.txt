@@ -1,0 +1,23 @@
+#include<iostream>
+using namespace std;
+int check[1001];
+int d(int n) {
+	if (n == 1) {
+		check[n] = n;
+		return check[n];
+	}
+	if (n == 2) {
+		check[n] = n;
+		return check[n];
+	}
+	if (check[n] > 0) return check[n];
+	check[n] = d(n - 1) + d(n - 2);
+	check[n] %= 10007;
+	return check[n];
+}
+int main() {
+	int n;
+	cin >> n;
+	cout <<d(n)<<'\n';
+	return 0;
+}
