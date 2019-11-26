@@ -1,0 +1,27 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int main() {
+	int a, b,m;
+	cin >> a >> b >> m;
+	vector<int> num(m);
+	int ten = 0;
+	for (int i = 0; i < m; i++) {
+		cin >> num[i];
+		ten = ten * a + num[i];
+	}
+	int r = ten;
+	vector<int> ans;
+	while (1) {
+		ans.push_back(r % b);
+		r = r / b;
+		if (r == 0) break;
+	}
+	reverse(ans.begin(), ans.end());
+	for (int i = 0; i < ans.size(); i++) {
+		cout << ans[i]<<' ';
+	}
+	cout << '\n';
+	return 0;
+}
