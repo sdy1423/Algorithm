@@ -1,0 +1,57 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+long long a[1001][3];
+long long d[1001][3];
+long long const MAX = 1000000000;
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	int n;
+	cin >> n;
+	long long ans = MAX;
+	long long temp;
+	for (int i = 1; i <= n; i++) {
+		cin >> a[i][0] >> a[i][1] >> a[i][2];
+	}
+	for (int i = 0; i < 3; i++) {
+		if (i == 0) {	//i=0 => 첫번째가 무조건 빨강
+			d[1][0] = a[1][0];
+			d[1][1] = MAX;
+			d[1][2] = MAX;
+		}
+		if (i == 1) {	// 첫번째가 초록
+			d[1][1] = a[1][1];
+			d[1][0] = MAX;
+			d[1][2] = MAX;
+		}
+		if (i == 2) {	//첫번째가 파랑
+			d[1][2] = a[1][2];
+			d[1][0] = MAX;
+			d[1][1] = MAX;
+		}
+		for (int j = 2; j < n; j++) {
+			d[j][0] = a[j][0] + min(d[j - 1][1], d[j - 1][2]);
+			d[j][1] = a[j][1] + min(d[j - 1][0], d[j - 1][2]);
+			d[j][2] = a[j][2] + min(d[j - 1][0], d[j - 1][1]);
+		}
+		if (i == 0) {
+			d[n][1] = a[n][1] + min(d[n - 1][0], d[n - 1][2]);
+			d[n][2] = a[n][2] + min(d[n - 1][0], d[n - 1][1]);
+			temp = min(d[n][1], d[n][2]);
+		}
+		if (i == 1) {
+			d[n][0]= a[n][0] + min(d[n - 1][1], d[n - 1][2]);
+			d[n][2]= a[n][2] + min(d[n - 1][0], d[n - 1][1]);
+			temp = min(d[n][0], d[n][2]);
+		}
+		if (i == 2) {
+			d[n][0]= a[n][0] + min(d[n - 1][1], d[n - 1][2]);
+			d[n][1]= a[n][1] + min(d[n - 1][0], d[n - 1][2]);
+			temp = min(d[n][0], d[n][1]);
+		}
+		if (temp < ans) ans = temp;
+	}
+	cout << ans << '\n';
+	return 0;
+}
