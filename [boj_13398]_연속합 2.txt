@@ -1,0 +1,34 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	int n;
+	cin >> n;
+	vector<int> a(n);
+	vector<int> d1(n);
+	vector<int> d2(n);
+	for (int i = 0; i < n; i++) {
+		cin >> a[i];
+		d1[i] = a[i];
+		d2[i] = a[i];
+	}
+	int ans = a[0];
+	//레귤러
+	for (int i = 1; i < n; i++) {
+		d1[i] = max(a[i], d1[i - 1] + a[i]);
+		if (d1[i] > ans) ans = d1[i];
+	}
+	//리버스
+	for (int i = n - 2; i >= 0; i--) {
+		d2[i] = max(a[i], d2[i + 1] + a[i]);
+	}
+	//조합 d1[k-1]+d[k+1]
+	for (int i = 1; i < n-1; i++) {
+		if (ans < d1[i - 1] + d2[i + 1]) ans = d1[i - 1] + d2[i + 1];
+	}
+	cout << ans << '\n';
+	return 0;
+}
