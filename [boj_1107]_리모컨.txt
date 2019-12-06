@@ -1,0 +1,42 @@
+#include<iostream>
+using namespace std;
+bool bro[10]; //고장나면 true , 정상이면 false
+int check(int n) {
+	int len = 0;
+	while (1) {//고장난거 있으면 불가능 하므로 0리턴 
+		//없으면 가능하므로 길이 리턴
+		int a = n % 10;
+		if (bro[a]) return 0;
+		len += 1;
+		n = n / 10;
+		if (n == 0) return len;
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	int n, m,d;
+	cin >> n >> m;
+	for (int i = 0; i < m; i++) {
+		cin>>d;
+		bro[d] = true;
+	}
+	if (n == 100) {
+		cout << 0 << '\n';
+		return 0;
+	}
+	int ans, len, temp;
+	//일단 +-로 이동하는 경우
+	ans = n - 100;
+	if (ans < 0) ans = -ans;
+
+	for (int i = 0; i <= 1000000; i++) {
+		len = check(i);
+		if (len == 0) continue;
+		temp = i - n;
+		if (temp < 0) temp = -temp;
+		if (ans > len + temp) ans = len + temp;
+	}
+	cout << ans << '\n';
+	return 0;
+}
