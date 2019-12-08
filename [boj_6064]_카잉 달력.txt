@@ -1,0 +1,27 @@
+#include<iostream>
+using namespace std;
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	int t, m, n, x, y;
+	cin >> t;
+	while (t--) {
+		cin >> m >> n >> x >> y;
+		bool ok = true;
+		for (int i = x - 1; i < m * n; i += m) {
+			if (i % m == x - 1 && i % n == y - 1) {
+				ok = false;
+				cout << i + 1 << '\n';
+				break;
+			}
+			if (i % m == m - 1 && i % n == n - 1) {
+				ok = true;
+				break;
+			}
+		}
+		if (ok) {
+			cout << -1<<'\n';
+		}
+	}
+	return 0;
+}
