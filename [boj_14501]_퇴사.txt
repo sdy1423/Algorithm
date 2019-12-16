@@ -1,0 +1,33 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+vector<int> t(15);
+vector<int> p(15);
+int ans = 0;
+// n 입력받은 일 수
+// i 현재날자
+// sum 금액 합
+void go(int n, int i, int sum) {
+	if (i == n) {
+		if (ans < sum) ans = sum;
+		return;
+	}
+	if (i > n) return; //불가능
+	//오늘 상담 시작할경우
+	go(n, i + t[i], sum + p[i]);
+	//오늘 상담 안할경우
+	go(n, i + 1, sum);
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	int n;
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> t[i];
+		cin >> p[i];
+	}
+	go(n, 0, 0);
+	cout << ans << '\n';
+	return 0;
+}
