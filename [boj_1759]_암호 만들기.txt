@@ -1,0 +1,46 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	int l, c;
+	cin >> l >> c;
+	vector<char> ch(c);
+	vector<int> d(c);
+	vector<char> ans(c);
+	for (int i = 0; i < c; i++) {
+		cin >> ch[i];
+	}
+	sort(ch.begin(), ch.end());
+	for (int i = 0; i < l; i++) {
+		d[i] = 1;
+	}
+	for (int i = l; i < c; i++) {
+		d[i] = 0;
+	}
+	do {
+		int cnt = 0;
+		int vowel = 0;
+		for (int i = 0; i < c; i++) {
+			if (d[i]) {
+				ans[cnt]=ch[i];
+				cnt++;
+				if (ch[i] == 'a' || ch[i] == 'e' || ch[i] == 'i' || ch[i] == 'o' || ch[i] == 'u') {
+					vowel += 1;
+				}
+			}
+			else {
+				continue;
+			}			
+		}
+		if (vowel>=1 && vowel<=l-2) {
+			for (int i = 0; i < l; i++) {
+				cout << ans[i];
+			}
+			cout << '\n';
+		}
+	} while (prev_permutation(d.begin(), d.end()));
+	return 0;
+}
