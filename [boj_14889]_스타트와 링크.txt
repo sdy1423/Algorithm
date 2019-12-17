@@ -1,0 +1,57 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+int d[21][21];
+int n;
+int sum_first = 0;
+int sum_second = 0;
+int ans = -1;
+int sum = 0;
+vector<int> first;
+vector<int> second;
+int go(int index, vector<int>& first, vector<int>& second) {
+	if (index == n) {
+		if (first.size() != n / 2) {
+			return -1;
+		}
+		if (second.size() != n / 2) {
+			return -1;
+		}
+		sum_first = 0;
+		sum_second = 0;
+		for (int i = 0; i < n/2; i++) {
+			for (int j = i + 1; j < n/2; j++) {
+				sum_first += d[first[i]][first[j]];
+				sum_first += d[first[j]][first[i]];
+				sum_second += d[second[i]][second[j]];
+				sum_second += d[second[j]][second[i]];
+			}
+		}
+		int temp = sum_first - sum_second;
+		if (temp < 0) temp = -temp;
+		return temp;
+	}
+	if (first.size() > n / 2) return -1;
+	if (second.size() > n / 2) return -1;
+	first.push_back(index);
+	sum = go(index + 1, first, second);
+	if ((sum < ans && sum != -1) || ans == -1) ans = sum;
+	first.pop_back();
+	second.push_back(index);
+	sum = go(index + 1, first, second);
+	if ((sum < ans && sum != -1) || ans == -1) ans = sum;
+	second.pop_back();
+	return ans;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> d[i][j];
+		}
+	}
+	cout << go(0, first, second) << '\n';
+	return 0;
+}
