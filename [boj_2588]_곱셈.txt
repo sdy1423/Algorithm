@@ -1,0 +1,15 @@
+#include<iostream>
+#include<string>
+using namespace std;
+int main() {
+	int a;
+	string b;
+	cin >> a >> b;
+	int ans1 = a * (b[2] - '0');
+	int ans2 = a * (b[1] - '0');
+	int ans3 = a * (b[0] - '0');
+	int ans4 = a * stoi(b);
+	cout << ans1 << '\n' << ans2 << '\n' << ans3 << '\n' << ans4 << '\n';
+
+	return 0;
+}
