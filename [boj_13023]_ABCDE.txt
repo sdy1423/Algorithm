@@ -1,0 +1,44 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+vector<pair<int, int>> edges;
+int map[2001][2001];
+vector<int> go[2001];
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	int n, m;
+	cin >> n >> m;
+	for (int i = 0; i < m; i++) {
+		int from, to;
+		cin >> from >> to;
+		map[from][to] = 1;
+		map[to][from] = 1;
+		edges.push_back({ from,to });
+		edges.push_back({ to,from });
+		go[from].push_back(to);
+		go[to].push_back(from);
+	}
+
+	m *= 2;
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < m; j++) {
+			int a, b, c, d,e;
+			a = edges[i].first;
+			b = edges[i].second;
+			c = edges[j].first;
+			d = edges[j].second;
+			if (a == b || a == c || a == d || b == c || b == d || c == d) continue;
+			if (!map[b][c]) continue;
+			for (int k = 0; k < go[d].size(); k++) {
+				e = go[d][k];
+				if (e == a || e == b || e == c || e == d) continue;
+				cout << 1 << '\n';
+				return 0;
+			}
+		}
+	}
+	cout << 0 << '\n';
+	return 0;
+}
