@@ -1,0 +1,55 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<algorithm>
+using namespace std;
+int mat[1001][1001];  //인접행렬
+vector<int> ad[1001];//인접 리스트
+bool check_dfs[1001]; //dfs체크
+bool check_bfs[1001]; //bfs체크
+queue<int> q; 
+void dfs(int x) {
+	check_dfs[x] = true;
+	cout << x << ' ';
+	for (int n : ad[x]) {
+		if (check_dfs[n]) continue;
+		dfs(n);
+	}
+}
+void bfs(int x) {
+	check_bfs[x] = true;
+	q.push(x);
+	while (!q.empty()) {
+		x = q.front();
+		cout << q.front() << ' ';
+		q.pop();
+		for (int i = 0; i < ad[x].size(); i++) {
+			int num = ad[x][i];
+			if (check_bfs[num]) continue;
+			check_bfs[num] = true;
+			q.push(num);
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	int n, m, v;
+	cin >> n >> m >> v;
+	for (int i = 0; i < m; i++) {
+		int from, to;
+		cin >> from >> to;
+		mat[from][to] = 1;
+		mat[to][from] = 1;
+		ad[from].push_back(to);
+		ad[to].push_back(from);
+	}
+	for (int i = 1; i <= n; i++) {
+		sort(ad[i].begin(), ad[i].end());
+	}
+	dfs(v);
+	cout << '\n';
+	bfs(v);
+	cout << '\n';
+	return 0;
+}
