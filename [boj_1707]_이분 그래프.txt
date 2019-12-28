@@ -1,0 +1,49 @@
+#include<iostream>
+#include<vector>
+#include<string.h>
+#include<algorithm>
+using namespace std;
+vector<int> a[20001];
+int check[20001];
+bool dfs(int node,int current) {
+	check[node] = current;
+	for (int i = 0; i < a[node].size(); i++) {
+		int next = a[node][i];
+		if (check[next] == 0) {
+			if (dfs(next, 3 - current) == false) return false;
+		}
+		else {
+			if (check[next] == check[node]) return false;
+		}
+	}
+	return true;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	int k, v, e,from,to;
+	cin >> k;
+	while (k--) {
+		cin >> v >> e;
+		for (int i = 1; i <= v; i++) {
+			check[i] = 0;
+			a[i].clear();
+		}
+		for (int i = 0; i < e; i++) {
+			cin >> from >> to;
+			a[from].push_back(to);
+			a[to].push_back(from);
+		}
+		bool ok = true;
+		for (int i = 1; i <= v; i++) {
+			if (check[i] == 0) {
+				if (dfs(i, 1) == false) {
+					ok = false;
+				}
+			}
+		}
+		if (ok == false) cout << "NO" << '\n';
+		else cout << "YES" << '\n';
+	}
+	return 0;
+}
