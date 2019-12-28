@@ -45,5 +45,6 @@ int main() {
 		if (ok == false) cout << "NO" << '\n';
 		else cout << "YES" << '\n';
 	}
+
 	return 0;
 }
