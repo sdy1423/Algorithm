@@ -1,0 +1,51 @@
+#include<cstdio>
+#include<algorithm>
+#include<iostream>
+using namespace std;
+int a[26][26];
+int num[26]; //단지는 최대25개, 각 단지당 아파트 수
+int n;
+int apt_c;//아파트 수 카운트
+void dfs(int x, int y) {
+	apt_c += 1;
+	a[x][y] = 2;
+	if (y != n - 1 && a[x][y + 1]==1){ //오른쪽
+		dfs(x, y + 1);
+	}
+	if (x != n - 1 && a[x + 1][y]==1) {  //아래
+		dfs(x + 1, y);
+	}
+	if (y != 0 && a[x][y - 1]==1) { //왼
+		dfs(x, y - 1);
+	}
+	if (x != 0 && a[x - 1][y]==1) { //위
+		dfs(x - 1, y);
+	}
+	return;
+}
+int main() {
+	int n;
+	scanf("%d", &n);
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			scanf("%1d", &a[i][j]);
+		}
+	}
+	int total = 0;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			int curr = a[i][j];
+			if (curr==1) {
+				apt_c = 0;
+				dfs(i, j);
+				num[total] = apt_c;
+				total += 1;//단지의 개수
+			}
+			else continue;
+		}
+	}
+	printf("%d\n", total); //총 단지수
+	sort(num, num+total);
+	for (int i = 0; i < total; i++) printf("%d\n", num[i]);
+	return 0;
+}
