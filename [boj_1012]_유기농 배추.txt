@@ -1,0 +1,50 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+vector<vector<int>> a;
+vector<vector<bool>> visited;
+int cnt;
+int m, n;
+int dx[] = { -1,0,0,1 };
+int dy[] = { 0,-1,1,0 };
+void dfs(int x,int y) {
+	visited[x][y] = true;
+	for (int i = 0; i < 4; i++) {
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+		if (nx >= 0 && ny >= 0 && nx < n && ny < m) {
+			if (a[nx][ny] == 1 && visited[nx][ny] == false) {
+				dfs(nx, ny);
+			}
+		}
+		else continue;
+	}
+	return;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+	int t, k, u, v;
+	cin >> t;
+	while (t--) {
+		cin >> m >> n >> k;
+		a.assign(n, vector<int>(m, 0));
+		visited.assign(n, vector<bool>(m, false));
+		cnt = 0;
+		for (int i = 0; i < k; i++) {
+			cin >> u >> v; 
+			a[v][u] = 1;
+			
+		}
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				if (a[i][j] == 1 && visited[i][j] == false) {
+					dfs(i, j);
+					cnt += 1;
+				}
+			}
+		}
+		cout << cnt << '\n';
+	}
+}
