@@ -1,0 +1,80 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int go[101][101];
+bool visited[101][101];
+int dx[] = {-1,0,0,1};
+int dy[] = {0,-1,1,0};
+int cnt;
+int cnt_in;
+int n, m;
+void dfs(int x, int y) {
+	visited[x][y] = true;
+	cnt_in++;
+	for (int i = 0; i < 4; i++) {
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+		if (nx >= 0 && ny >= 0 && nx < n && ny < m) {
+			if (visited[nx][ny] == false && go[nx][ny] == 0) {
+				dfs(nx, ny);
+			}
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+	int k; 
+	cin >> n >> m >> k;
+	int a, b, c, d;
+	vector<pair<int, int>> li_start;
+	vector<pair<int, int>> li_end;
+	vector<int> area;
+	for (int i = 0; i < k; i++) {
+		cin >> a >> b >> c >> d;
+		li_start.push_back(make_pair(a,b));
+		li_end.push_back(make_pair(c, d));
+	}
+	for (int i = 0; i < li_start.size(); i++) {
+
+		for (int j = 0; j < n; j++) {
+			for (int k = 0; k < m; k++) {
+				int s_f = li_start[i].first;
+				int s_s = li_start[i].second;
+				int e_f = li_end[i].first;
+				int e_s = li_end[i].second;
+				if (k>=s_f&&k<e_f&&j<(n-s_s)&&j>=(n-e_s)) {
+					go[j][k] = 1;
+				}
+			}
+		}
+	}
+	/*
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cout << go[i][j] << " ";
+		}
+		cout << '\n';
+	}
+	*/
+	cnt = 0;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			if (visited[i][j] == false && go[i][j] == 0) {
+				cnt++;
+				cnt_in = 0;
+				dfs(i, j);
+				area.push_back(cnt_in);
+			}
+		}
+	}
+	cout << cnt << '\n';
+	sort(area.begin(), area.end());
+	for (int i = 0; i < area.size(); i++) {
+		cout << area[i] << " ";
+	}
+	cout << '\n';
+	return 0;
+}
