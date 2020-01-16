@@ -1,0 +1,42 @@
+#include<iostream>
+using namespace std;
+int n, m, k, cnt;
+int a[101][101];
+bool ok[101][101];
+int dx[] = {-1,0,0,1};
+int dy[] = {0,-1,1,0};                    
+void dfs(int x, int y) {
+	cnt++;
+	ok[x][y] = true;
+	for (int i = 0; i < 4; i++) {
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+		if (nx >= 0 && ny >= 0 && nx < n && ny < m) {
+			if (ok[nx][ny] == false && a[nx][ny] == 1) {
+				dfs(nx, ny);
+			}
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n >> m >> k;
+	int u, v;
+	for (int i = 0; i < k; i++) {
+		cin >> u >> v;
+		a[u-1][v-1] = 1;
+	}
+	int max = 0;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			if (ok[i][j] == false && a[i][j] == 1) {
+				cnt = 0;
+				dfs(i, j);
+				if (max < cnt) max = cnt;
+			}
+		}
+	}
+	cout << max << '\n';
+	return 0;
+}
