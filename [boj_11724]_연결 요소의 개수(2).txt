@@ -1,0 +1,38 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+int n, m;
+vector<int> a[1001];
+bool ok[1001];
+int cnt;
+void dfs(int n) {
+	ok[n] = true;
+	int len = a[n].size();
+	for (int i = 0; i < len; i++) {
+		if (ok[a[n][i]] == false){
+			dfs(a[n][i]);
+		}
+	}
+
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+	cin >> n >> m;
+	int u, v;
+	for (int i = 0; i < m; i++) {
+		cin >> u >> v;
+		a[u].push_back(v);
+		a[v].push_back(u);
+	}
+	cnt = 0;
+	for (int i = 1; i <= n; i++) {
+		if (ok[i] == false) {
+			cnt++;
+			dfs(i);
+		}
+	}
+	cout << cnt << '\n';
+	return 0;
+}
