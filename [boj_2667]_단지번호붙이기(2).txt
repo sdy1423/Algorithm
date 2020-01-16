@@ -1,0 +1,58 @@
+#include<iostream>
+#include<vector>
+#include<string>
+#include<algorithm>
+using namespace std;
+int a[26][26];
+bool ok[26][26];
+int cnt;
+int cntIn;
+int dx[] = {-1,0,0,1};
+int dy[] = {0,-1,1,0};
+int n;
+void dfs(int x, int y) {
+	cntIn++;
+	ok[x][y] = true;
+	for (int i = 0; i < 4; i++) {
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+		if (nx >= 0 && ny >= 0 && nx < n && ny < n) {
+			if (a[nx][ny] == 1 && ok[nx][ny] == false) {
+				dfs(nx, ny);
+			}
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n;
+	vector<string> str(n);
+	for (int i = 0; i < n; i++) {
+		cin >> str[i];
+	}
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			a[i][j] = str[i][j] - '0';
+		}
+	}
+	cnt = 0;
+	vector<int> temp;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (ok[i][j] == false && a[i][j] == 1) {
+				cnt++;
+				cntIn = 0;
+				dfs(i, j);
+				temp.push_back(cntIn);
+			}
+		}
+	}
+	cout << cnt << '\n';
+	int n = temp.size();
+	sort(temp.begin(), temp.end());
+	for (int i = 0; i < n; i++) {
+		cout << temp[i] << '\n';
+	}
+	return 0;
+}
