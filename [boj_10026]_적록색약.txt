@@ -1,0 +1,73 @@
+#include<iostream>
+#include<string>
+using namespace std;
+string str[101];
+char arr[101][101];
+bool visited1[101][101];
+bool visited2[101][101];
+int n;
+int dx[] = {-1,0,0,1};
+int dy[] = {0,-1,1,0};
+int cnt1, cnt2;
+void dfs1(int x,int y) {
+	visited1[x][y] = true;
+	for (int i = 0; i < 4; i++) {
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+		if (nx >= 0 && ny >= 0 && nx < n && ny < n) {
+			if (arr[nx][ny] == arr[x][y] && visited1[nx][ny]==false) {
+				dfs1(nx, ny);
+			}
+		}
+	}
+}
+void dfs2(int x, int y) {
+	visited2[x][y] = true;
+	for (int i = 0; i < 4; i++) {
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+		if (nx >= 0 && ny >= 0 && nx < n && ny < n) {
+			if (arr[nx][ny] == arr[x][y] && visited2[nx][ny] == false) {
+				dfs2(nx, ny);
+			}
+			else if (visited2[nx][ny] == false && arr[x][y] == 'G' && arr[nx][ny] == 'R') {
+				dfs2(nx, ny);
+			}
+			else if (visited2[nx][ny] == false && arr[x][y] == 'R' && arr[nx][ny] == 'G') {
+				dfs2(nx, ny);
+			}
+
+		}
+	}
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> str[i];
+	}
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			arr[i][j] = str[i][j];
+		}
+	}
+	cnt1 = 0; cnt2 = 0;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (visited1[i][j] == false) {
+				dfs1(i, j);
+				cnt1++;
+			}
+			if (visited2[i][j] == false) {
+				dfs2(i, j);
+				cnt2++;
+			}
+		}
+	}
+	cout << cnt1 << ' ' << cnt2 << '\n';
+	return 0;
+}
+
