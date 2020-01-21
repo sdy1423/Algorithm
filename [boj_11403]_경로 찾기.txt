@@ -1,0 +1,52 @@
+#include<iostream>
+#include<stack>
+#define N_MAX 100+1
+using namespace std;
+
+
+void dfs(int _root[N_MAX][N_MAX], int start_node, int _n) {
+	int visited[N_MAX] = { 0 };
+	stack<int> st;
+	st.push(start_node);
+
+	while (!st.empty()) {
+		int curr_node = st.top();
+		st.pop();
+
+		for (int to_node = 0; to_node < _n; to_node++) {
+			if (_root[curr_node][to_node] && !visited[to_node]) {
+				st.push(to_node);
+				visited[to_node] = 1;
+			}
+		}
+	}
+
+	for (int node = 0; node < _n; node++) {
+		if (visited[node] == true) _root[start_node][node] = 1;
+	}
+	return;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+	int n;
+	cin >> n;
+	int root[N_MAX][N_MAX];
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++)
+			cin >> root[i][j];
+	
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			dfs(root,i,n);
+		}
+	}
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cout << root[i][j] << ' ';
+		}
+		cout << '\n';
+	}
+	return 0;
+}
