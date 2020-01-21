@@ -1,0 +1,64 @@
+#include<iostream>
+#include<string>
+using namespace std;
+bool check[1000];
+
+void Initialize(void) {
+	string str;
+	for (int i = 100; i <= 999; i++) {
+		str = to_string(i);
+		if (str[0] == '0' || str[1] == '0' || str[2] == '0') {
+			check[i] = true;
+		}
+		else if (str[0] == str[1] || str[0] == str[2] || str[1] == str[2]) {
+			check[i] = true;
+		}
+		else {
+			check[i] = false;
+		}
+	}
+}
+
+void count_answer(void) {
+	int cnt = 0;
+	for (int i = 100; i <= 999; i++) {
+		if (check[i] == false) cnt++;
+	}
+	cout << cnt << '\n';
+}
+
+void Solution(void) {
+	int num, strike, ball;
+	string str1, str2;
+	cin >> num >> strike >> ball;
+	for (int i = 111; i <= 999; i++) {
+		if (check[i]) continue;
+		else {
+			str1 = to_string(num);
+			str2 = to_string(i);
+			int st = 0; int ba = 0;
+			for (int j = 0; j < 3; j++) {
+				for (int k = 0; k < 3; k++) {
+					if (j == k && str1[j] == str2[k]) st++;
+					if (j != k && str1[j] == str2[k]) ba++;
+				}
+			}
+			if (st == strike && ba == ball) check[i] = false;
+			else check[i] = true;
+		}
+	}
+
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);cout.tie(nullptr);
+	int T;
+	cin >> T;
+	Initialize();
+	while (T--) {
+		Solution();
+	}
+	count_answer();
+	return 0;
+}
