@@ -1,0 +1,30 @@
+#include<stack>
+#include<string>
+#include<iostream>
+#include<iomanip>
+using namespace std;
+int main() {
+	int n;
+	string str;
+	stack<double> st;
+	double arr[27];
+	cin >> n >> str;
+	for (int i = 0; i < n; i++) 
+		cin >> arr[i];
+	
+	for (char ch : str) {
+		if (ch >= 'A' && ch <= 'Z') {
+			st.push(arr[ch - 'A']);
+		}
+		else {
+			double a = st.top(); st.pop();
+			double b = st.top(); st.pop();
+			if (ch == '+') st.push(b + a);
+			else if (ch == '-') st.push(b - a);
+			else if (ch == '*') st.push(b * a);
+			else if (ch == '/') st.push(b / a);
+		}
+	}
+	cout << fixed<<setprecision(2)<< st.top() << '\n';
+	return 0;
+}
