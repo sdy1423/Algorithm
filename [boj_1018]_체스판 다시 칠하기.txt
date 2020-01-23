@@ -1,0 +1,57 @@
+#include<iostream>
+#include<string>
+#include<algorithm>
+using namespace std;
+string str[51];
+int cnt1, cnt2;
+int ans;
+string check_W[8] = {
+	"WBWBWBWB",
+	"BWBWBWBW",
+	"WBWBWBWB",
+	"BWBWBWBW",
+	"WBWBWBWB",
+	"BWBWBWBW",
+	"WBWBWBWB",
+	"BWBWBWBW" 
+};
+string check_B[8] = {
+	"BWBWBWBW",
+	"WBWBWBWB",
+	"BWBWBWBW",
+	"WBWBWBWB",
+	"BWBWBWBW",
+	"WBWBWBWB",
+	"BWBWBWBW",
+	"WBWBWBWB" 
+};
+void go(int x, int y) {
+	cnt1 = 0;
+	cnt2 = 0;
+	for (int i = x; i < x + 8; i++) {
+		for (int j = y; j < y + 8; j++) {
+			if (str[i][j] != check_W[i-x][j-y]) cnt1++;
+			if (str[i][j] != check_B[i-x][j-y]) cnt2++;
+		}
+	}
+	ans = min(cnt1,min(ans,cnt2));
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+	int n, m;
+	cin >> n >> m;
+	for (int i = 0; i < n; i++) {
+		cin >> str[i];
+	}
+	ans = 50 * 50 + 1;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			if (i + 7 < n && j + 7 < m) {
+				go(i, j);
+			}
+		}
+	}
+	cout << ans << '\n';
+}
