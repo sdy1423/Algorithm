@@ -1,0 +1,23 @@
+#include<iostream>
+using namespace std;
+int building[1001];
+int main() {
+	freopen("input.txt", "r", stdin);
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	int len,cnt,tk;
+	tk = 1;
+	while (cin >> len) {
+		for (int i = 0; i < len; i++) 
+			cin >> building[i];
+		cnt = 0;
+		for (int i = 2; i < len - 1; i++) {
+			for (int j = 0; j < building[i]; j++) {
+				if (j >= building[i - 2] && j >= building[i - 1] && j >= building[i + 1] && j >= building[i + 2]) cnt++;
+			}
+		}
+		
+		cout << "#" << tk++ << ' ' << cnt << '\n';
+	}
+	return 0;
+}
