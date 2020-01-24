@@ -1,0 +1,51 @@
+#include<iostream>
+#include<queue>
+#include<vector>
+using namespace std;
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	int n,from,to,m,parent,son,curr,next,cnt,qSize,arrSize;
+
+	vector<vector<int>> arr; //인접리스트 담는다.
+	queue<int> qu; //큐
+	vector<bool> visited; //방문기록
+	vector<int> num; //답 저장
+
+	cin >> n >> from >> to >> m;
+
+	arr.resize(n + 1);
+	visited.resize(n + 1, false);
+	num.resize(n + 1,-1);
+
+	for (int i = 0; i < m; i++) {
+		cin >> parent >> son;
+		arr[parent].push_back(son);
+		arr[son].push_back(parent);
+	}
+
+	visited[from] = true;
+	qu.push(from);
+
+	cnt = 0;
+
+	while (!qu.empty()) {
+		qSize = qu.size();
+		cnt++;
+		for (int i = 0; i < qSize; i++) {//3
+			curr = qu.front();
+			arrSize = arr[curr].size();
+			qu.pop();
+			for (int j = 0; j < arrSize; j++) {//2
+				next = arr[curr][j];
+				if (visited[next] == false) {
+					qu.push(next);
+					visited[next] = true;
+					num[next] = cnt;
+				}
+			}
+		}	
+	}
+	cout << num[to] << '\n';
+	return 0;
+}
