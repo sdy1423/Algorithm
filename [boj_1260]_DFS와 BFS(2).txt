@@ -1,0 +1,58 @@
+#include<iostream>
+#include<queue>
+#include<vector>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+bool visited[1001];
+vector<int> a[1001];
+
+void dfs(int curr) {
+	visited[curr] = true;
+	cout << curr << ' ';
+	for (int i = 0; i < a[curr].size(); i++) {
+		int next = a[curr][i];
+		if (visited[next] == false) {
+			dfs(next);
+		}
+	}
+}
+void bfs(int start) {
+	queue<int> qu;
+	int curr, next;
+	memset(visited, false, sizeof(visited));
+	qu.push(start);
+	visited[start] = true;
+
+	while (!qu.empty()) {
+		curr = qu.front(); qu.pop();
+		cout << curr << ' ';
+		for (int i = 0; i < a[curr].size(); i++) {
+			next = a[curr][i];
+			if (visited[next] == false) {
+				visited[next] = true;
+				qu.push(next);
+			}
+		}
+	}
+	cout << '\n';
+	return;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	int n, m, start, u, v;
+	cin >> n >> m >> start;
+	for (int i = 0; i < m; i++) {
+		cin >> u >> v;
+		a[u].push_back(v);
+		a[v].push_back(u);
+	}
+	for (int i = 0; i <= n; i++) sort(a[i].begin(), a[i].end());
+	memset(visited, false, sizeof(visited));
+	
+	dfs(start);
+	cout << '\n';
+	bfs(start);
+	return 0;
+}
