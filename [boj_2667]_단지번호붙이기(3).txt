@@ -1,0 +1,58 @@
+#include<iostream>
+#include<queue>
+#include<vector>
+#include<algorithm>
+using namespace std;
+
+int dx[] = {-1,0,0,1};
+int dy[] = {0,-1,1,0};
+int n;
+string str[25];
+bool visited[25][25];
+int cnt;
+
+int bfs(int x,int y,int apt) {
+	queue<pair<int, int>> qu;
+	
+	pair<int, int> curr;
+	visited[x][y] = true;
+	qu.push(make_pair(x, y));
+
+	while (!qu.empty()) {
+		curr = qu.front(); qu.pop();
+		for (int i = 0; i < 4; i++) {
+			int nx = dx[i] + curr.first;
+			int ny = dy[i] + curr.second;
+			if (nx >= 0 && ny >= 0 && nx < n && ny < n) {
+				if (visited[nx][ny] == false && str[nx][ny]=='1') {
+					visited[nx][ny] = true;
+					qu.push(make_pair(nx, ny));
+					cnt++;
+				}
+			}
+		}
+	}
+	return cnt;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	vector<int> apt_cnt;
+	cin >> n;
+	for (int i = 0; i < n; i++) cin >> str[i];
+	int apt = 0;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (visited[i][j] == false && str[i][j] == '1') {
+				cnt = 1;
+				apt++;
+				int temp = bfs(i, j,apt);
+				apt_cnt.push_back(temp);
+			}
+		}
+	}
+	sort(apt_cnt.begin(), apt_cnt.end());
+	cout << apt << '\n';
+	for (int i = 0; i < apt_cnt.size(); i++) cout << apt_cnt[i] << '\n';
+	return 0;
+}
