@@ -1,0 +1,111 @@
+#include<iostream>
+#include<queue>
+#include<cstring>
+using namespace std;
+int map[51][51];//장소
+bool ch[51][51];//청소 했는지 여부
+int n_row, m_col;//행,렬
+int cnt;//청소한 칸의 개수
+int dx[] = {-1,0,1,0};//위,왼쪽,오른쪽,아래
+int dy[] = {0,1,0,-1};//북동남서
+struct ROBOT {
+	int i;
+	int j;
+	int d;//0북, 1동, 2남, 3서
+};
+ROBOT robot;
+
+void solution() {
+	memset(ch, false, sizeof(ch));	
+	int dir = 0;
+	cnt++;
+	ROBOT cur = robot;
+	ROBOT next;
+	ch[cur.i][cur.j] = true;
+
+	while (1) {
+		//cout << "hi " << cur.i << ' ' << cur.j << '\n';
+
+		//d값 체크+청소필요여부
+		int x, y;
+		if (cur.d == 0) {
+			x = cur.i + dx[3]; y = cur.j + dy[3];
+		}
+		else if (cur.d == 1) {
+			x = cur.i + dx[0]; y = cur.j + dy[0];
+		}
+		else if (cur.d == 2) {
+			x = cur.i + dx[1]; y = cur.j + dy[1];
+		}
+		else if (cur.d == 3) {
+			x = cur.i + dx[2]; y = cur.j + dy[2];
+		}
+		if (ch[x][y] == false && map[x][y] == 0) { //빈칸이고 청소안함
+			ch[x][y] = true; cnt++;
+			next.i = x; next.j = y;
+			if (cur.d == 0) next.d = 3;
+			else if (cur.d == 1) next.d = 0;
+			else if (cur.d == 2) next.d = 1;
+			else if (cur.d == 3) next.d = 2;
+			cur = next;
+			dir = 0;
+			continue;
+		}
+		else { //청소할 곳 없으면 그 방향으로 회전하고 2번으로 돌아가.
+			dir++;
+			//cout << dir << '\n';
+
+			if (cur.d == 0) cur.d = 3;
+			else if (cur.d == 1) cur.d = 0;
+			else if (cur.d == 2) cur.d = 1;
+			else if (cur.d == 3)cur.d = 2;
+			if(dir!=4) continue;
+		}
+		if (dir == 4) {//사방이 청소 할 곳 없을경우
+				//후진가능 판단
+			dir = 0;
+			if (cur.d == 0) {
+				if (map[cur.i + dx[2]][cur.j + dy[2]] == 0) {
+					cur.i = cur.i + dx[2]; cur.j = cur.j + dy[2];
+					continue;
+				}
+			}
+			else if (cur.d == 1) {
+				if (map[cur.i + dx[3]][cur.j + dy[3]] == 0) {
+					cur.i = cur.i + dx[3]; cur.j = cur.j + dy[3];
+					continue;
+				}
+			}
+			else if (cur.d == 2) {
+				if (map[cur.i + dx[0]][cur.j + dy[0]] == 0) {
+					cur.i = cur.i + dx[0]; cur.j = cur.j + dy[0];
+					continue;
+				}
+			}
+			else if (cur.d == 3) {
+				if (map[cur.i + dx[1]][cur.j + dy[1]] == 0) {
+					cur.i = cur.i + dx[1]; cur.j = cur.j + dy[1];
+					continue;
+				}
+			}
+			break;
+		}
+	}
+	return;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	//freopen("input.txt", "r", stdin);
+	cin >> n_row >> m_col;
+	cin >> robot.i >> robot.j >> robot.d;
+	for (int i = 0; i < n_row; i++) {
+		for (int j = 0; j < m_col; j++) {
+			cin >> map[i][j]; //0빈칸, 1벽
+		}
+	}
+	cnt = 0; 
+	solution();
+	cout << cnt << '\n';
+	return 0;
+}
