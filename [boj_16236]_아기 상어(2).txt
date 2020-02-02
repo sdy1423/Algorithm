@@ -1,0 +1,88 @@
+#include<iostream>
+#include<queue>
+#include<cstring>
+using namespace std;
+struct SHARK{
+	int x;//행
+	int y;//열
+};
+SHARK shark;
+int shark_size = 2;
+int shark_time = 0;
+int cnt; //먹은 횟수
+int n;
+int map[25][25];
+bool visited[25][25];
+int dist[25][25];
+bool go;
+queue<SHARK> q;
+int dx[] = { -1,0,0,1 };
+int dy[] = { 0,-1,1,0 };
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n;
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> map[i][j];
+			if (map[i][j] == 9) {
+				shark.x = i; shark.y = j; map[i][j] = 0; go = true;
+			}
+		}
+	}
+	SHARK cur, next,candi;
+	int dist_temp;
+	while (go) {
+		go = false;
+		memset(visited, false, sizeof(visited));
+		memset(dist, 0, sizeof(dist));
+		q.push(shark); visited[shark.x][shark.y] = true;
+		while (!q.empty()) {
+			cur = q.front(); q.pop();
+			for (int ii = 0; ii < 4; ii++) {
+				for (int i = 0; i < 4; i++) {
+					next.x = cur.x + dx[i]; next.y = cur.y + dy[i];
+					if (next.x >= 0 && next.y >= 0 && next.x < n && next.y < n) {
+						if (visited[next.x][next.y]==false && (shark_size>=map[next.x][next.y])){
+							visited[next.x][next.y] = true;
+							dist[next.x][next.y] = dist[cur.x][cur.y] + 1;
+							q.push(next);
+						}
+					}
+				}
+			}
+		}
+		candi.x = 999; candi.y = 999;
+		dist_temp = 999;
+	
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (visited[i][j]==true && map[i][j]>0 && map[i][j]<shark_size) {
+					go = true;
+					if (dist_temp > dist[i][j]) { 
+						candi.x = i; candi.y = j; dist_temp = dist[i][j];
+					}
+					else if (dist_temp == dist[i][j]) { 
+						if (i < candi.x) { 
+							candi.x = i; candi.y = j;
+						}
+						else if (i == candi.x && j < candi.y) { 
+							candi.x = i; candi.y = j;
+						}
+					}
+				}
+			}
+		}
+		if (!go) break;
+		cnt++;
+		if (cnt == shark_size) {
+			shark_size++; cnt = 0;
+		}
+		shark = candi; 
+		map[shark.x][shark.y] = 0;
+		shark_time += dist[shark.x][shark.y];		
+	}
+	cout << shark_time << '\n';
+	return 0;
+}
