@@ -1,0 +1,99 @@
+#include<iostream>
+using namespace std;
+struct ROBOT {
+	int i_row; int j_col; int dir;
+};
+ROBOT robot;
+
+#define up 0;
+#define east 1;
+#define south 2;
+#define west 3;
+int next[4] = { 3,0,1,2 };
+
+int n, m;
+int map[50][50];
+bool visited[50][50];
+int cnt=0;
+
+int dx[] = {0,-1,0,1};
+int dy[] = {-1,0,1,0}; //현재방향 인덱스 넣으면 다음 방향 나오도록
+
+int dir[4] = { 3 , 0, 1, 2 };
+
+void solution() {
+	//탐색
+	bool ok = true; //필요 없으면 종료되도록
+	while (ok) {
+		if (visited[robot.i_row][robot.j_col] == false) {
+			visited[robot.i_row][robot.j_col] = true;
+			cnt++;//현위치 청소 
+		}
+		ok = false;
+		int cur_dir = robot.dir;
+		
+		for (int i = 0; i < 4; i++) { //탐색 고고 //이건 그냥 4번만 하는 용도
+			int nx = robot.i_row + dx[cur_dir];
+			int ny = robot.j_col + dy[cur_dir];
+			cur_dir = dir[cur_dir];
+			//청소하지 않은 공간이 존재한다면
+			if (visited[nx][ny] == false && map[nx][ny] == 0) {
+				ok = true;
+				robot.i_row = nx; robot.j_col = ny; robot.dir = cur_dir;
+				break;
+			}
+		}
+		//청소할 공간이 없다면
+		if (!ok) {
+			switch (robot.dir)
+			{
+			case 0:
+				if (map[robot.i_row + 1][robot.j_col] == 1) break;
+				else {
+					ok = true;
+					robot.i_row += 1;
+				}
+				break;
+			case 1:
+				if (map[robot.i_row ][robot.j_col-1] == 1) break;
+				else {
+					ok = true;
+					robot.j_col += -1;
+				}
+				break;
+			case 2:
+				if (map[robot.i_row - 1][robot.j_col] == 1) break;
+				else {
+					ok = true;
+					robot.i_row += -1;
+				}
+				break;
+			case 3:
+				if (map[robot.i_row][robot.j_col+1] == 1) break;
+				else {
+					ok = true;
+					robot.j_col += 1;
+				}
+				break;
+			}
+		}
+	}
+	return;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n >> m;
+	int r, c, d;
+	cin >> r >> c >> d;
+	robot.i_row = r; robot.j_col = c; robot.dir = d;
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> map[i][j];
+		}
+	}
+	solution();
+	cout << cnt << '\n';
+	return 0;
+}
