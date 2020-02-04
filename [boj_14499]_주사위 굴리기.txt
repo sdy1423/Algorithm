@@ -1,0 +1,95 @@
+#include<iostream>
+using namespace std;
+int n, m;
+int x, y;
+int k;
+int map[21][21];
+int order[1001];
+struct CUBE {
+	int i_row, j_col;
+	int left; int right;
+	int up; int down;
+	int front; int back;
+};
+CUBE cube;
+int temp_left, temp_right, temp_up, temp_down, temp_front, temp_back;
+bool go(int order) {
+	temp_left = cube.left; 
+	temp_right = cube.right; 
+	temp_up = cube.up;  
+	temp_down = cube.down; 
+	temp_front = cube.front; 
+	temp_back = cube.back;
+	switch (order) {
+	case 1:
+		if (cube.j_col + 1 >= m || cube.j_col + 1<0) return false;
+		cube.j_col = cube.j_col + 1;
+		cube.left = temp_down;
+		cube.right = temp_up;
+		cube.up= temp_left;
+		cube.down= temp_right;
+		cube.front= temp_front;
+		cube.back= temp_back;
+		break;
+	case 2:
+		if (cube.j_col - 1 >= m || cube.j_col - 1 < 0) return false;
+		cube.j_col = cube.j_col - 1;
+		cube.left = temp_up;
+		cube.right =temp_down;
+		cube.up = temp_right;
+		cube.down = temp_left;
+		cube.front =temp_front;
+		cube.back = temp_back;
+		break;
+	case 3:
+		if (cube.i_row - 1 < 0 || cube.i_row - 1 >= n) return false;
+		cube.i_row = cube.i_row - 1; 
+		cube.left = temp_left;
+		cube.right = temp_right;
+		cube.up = temp_front;
+		cube.down = temp_back;
+		cube.front = temp_down;
+		cube.back = temp_up;
+		break;
+	case 4:
+		if (cube.i_row + 1 < 0 || cube.i_row + 1 >= n) return false;
+		cube.i_row = cube.i_row + 1; 
+		cube.left = temp_left;
+		cube.right = temp_right;
+		cube.up = temp_back;
+		cube.down = temp_front;
+		cube.front = temp_up;
+		cube.back = temp_down;
+		break;
+	}
+	return true;
+}
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n >> m; 
+	cin >> x >> y; 
+	cin >> k; 
+	cube.i_row = x; cube.j_col = y;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> map[i][j];
+		}
+	}
+	for (int i = 0; i < k; i++) {
+		cin >> order[i];
+	}
+	bool ok = true;
+	for (int i = 0; i < k; i++) {
+		ok = go(order[i]);
+		if (!ok) continue; 
+		if (!map[cube.i_row][cube.j_col]) {
+			map[cube.i_row][cube.j_col] = cube.down;
+		}
+		else {
+			cube.down = map[cube.i_row][cube.j_col];
+			map[cube.i_row][cube.j_col] = 0;
+		}
+		cout << cube.up << '\n';
+	}
+	return 0;
+}
