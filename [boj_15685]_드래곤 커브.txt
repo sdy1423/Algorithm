@@ -1,0 +1,46 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+bool map[101][101];
+int dx[] = {0,-1,0,1};
+int dy[] = {1,0,-1,0};
+vector<int> solution(int x_row, int y_col, int dir, int gen) {
+	map[x_row][y_col] = true;
+	vector<int> go = { dir };
+	for (int i = 1; i <= gen; i++) {
+		vector<int> temp(go);
+		reverse(temp.begin(), temp.end());
+		for (int j = 0; j < temp.size(); j++) {
+			go.push_back((temp[j] + 1) % 4);
+		}
+	}
+	return go;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	int n;
+	cin >> n;
+	int x_row, y_col, dir, gen;
+	while (n--) {
+		cin >> y_col >> x_row >> dir >> gen;
+		vector<int> ans = solution(x_row, y_col, dir, gen);
+		for (int i = 0; i < ans.size(); i++) {
+			x_row = x_row + dx[ans[i]];
+			y_col = y_col + dy[ans[i]];
+			map[x_row][y_col] = true;
+		}
+
+	}
+	int cnt = 0;
+	for (int i = 0; i <= 99; i++) {
+		for (int j = 0; j <= 99; j++) {
+			if (map[i][j] && map[i + 1][j] && map[i][j + 1] && map[i + 1][j + 1]) {
+				cnt++;
+			}
+		}
+	}
+	cout << cnt << '\n';
+	return 0;
+}
