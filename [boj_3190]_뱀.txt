@@ -1,0 +1,86 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+queue<pair<int, char>> order;
+struct SNAKE {
+	int i_row; int j_col; //위치
+	int dir; int len; //방향과 길이
+};
+SNAKE snake;
+int n,k,l,x; 
+char c;
+int map[100][100];
+// whereSnake[100][100]; //뱀이 있으면 true, 없으면 false;
+int sec; //초 세기
+int dx[] = {-1,0,1,0};
+int dy[] = {0,1,0,-1};
+
+void input() {
+	cin >> n >> k;
+	for (int i = 0; i < k; i++) {
+		int u, v;
+		cin >> u >> v;
+		u--; v--;
+		map[u][v] = -1; // 사과가 존재하면 -1 넣는다. 
+	}
+	cin >> l;
+	for (int i = 0; i < l; i++) {
+		cin >> x >> c;
+		//벡터에 담아서 선입선출하자
+		order.push(make_pair(x, c));
+	}
+	snake.i_row = 0; snake.j_col = 0; 
+	snake.dir = 1; snake.len =1;
+	map[0][0] = 1;
+	sec = 0;
+}
+void solution() {
+	while (true) {
+		//머리이동
+		int nx = snake.i_row + dx[snake.dir];
+		int ny = snake.j_col + dy[snake.dir];
+		//범위체크, 자기 자신 부딛히는지 체크
+		if ( (nx < 0 || ny < 0 || nx >= n || ny >= n) || map[nx][ny] > 0) {
+			sec++;
+			break;
+		}
+		//사과 존재 여부
+		if (map[nx][ny] == -1) { //사과 존재
+			int temp = 0;
+			snake.len++;
+			map[nx][ny] = snake.len;
+		}
+		else if(map[nx][ny] == 0){ //사과 없어
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					if (map[i][j] > 0) map[i][j] = map[i][j] - 1;
+				}
+			}
+			map[nx][ny] = snake.len;
+		}
+		snake.i_row = nx; snake.j_col = ny;
+		//동작 종료 1초 증가
+		sec++;
+		//벡터 체크
+		if (!order.empty()) {
+			if (sec == order.front().first) {
+				//방향 전환(방향만 전환하지 이동은 하지 않는다)
+				if (order.front().second == 'L') {//왼쪽
+					snake.dir = (snake.dir + 3) % 4;
+				}
+				else if (order.front().second == 'D') {//오른쪽
+					snake.dir = (snake.dir + 1) % 4;
+				}
+				order.pop();
+			}
+		}
+	}
+	return;
+}
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	input();
+	solution();
+	cout << sec << '\n';
+	return 0;
+}
