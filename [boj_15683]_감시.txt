@@ -1,0 +1,92 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int n, m;
+int dx[] = {0,1,0,-1};
+int dy[] = {1,0,-1,0};
+struct CCTV {
+	int row, col, what;
+};
+vector<CCTV> tvList;
+void check(vector<vector<int>> &m2, int dir,int row,int col) {
+	int x = row; int y = col;
+	while (1) {
+		int nx = x + dx[dir]; int ny = y + dy[dir];
+		if (nx < 0 || ny < 0 || nx >= n || ny >= m) break;
+		if (m2[nx][ny] == 6) break;
+		m2[nx][ny] = -1;
+		x = nx; y = ny;
+	}
+}
+int go(vector<vector<int>>& m1, vector<vector<int>>& m2,int index,vector<int> &dirs) {
+	if (tvList.size() == index) {
+		m2 = m1;
+		for (int i = 0; i < tvList.size(); i++) {
+			int what = tvList[i].what;
+			int i_row = tvList[i].row;
+			int j_col = tvList[i].col;
+			switch (what)
+			{
+			case 1:
+				check(m2, dirs[i], i_row, j_col);
+				break;
+			case 2:
+				check(m2, dirs[i], i_row, j_col);
+				check(m2, (dirs[i] + 2) % 4, i_row, j_col);
+				break;
+			case 3:
+				check(m2, dirs[i], i_row, j_col);
+				check(m2, (dirs[i] + 1) % 4, i_row, j_col);
+				break;
+			case 4:
+				check(m2, dirs[i], i_row, j_col);
+				check(m2, (dirs[i] + 1) % 4, i_row, j_col);
+				check(m2, (dirs[i] + 2) % 4, i_row, j_col);
+				break;
+			case 5:
+				check(m2, dirs[i], i_row, j_col);
+				check(m2, (dirs[i] + 1) % 4, i_row, j_col);
+				check(m2, (dirs[i] + 2) % 4, i_row, j_col);
+				check(m2, (dirs[i] + 3) % 4, i_row, j_col);
+				break;
+			}
+		}
+		int cnt = 0;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				if (m2[i][j] == 0) {
+					cnt++;
+				}
+			}
+		}
+		return cnt;
+	}
+	int ans = 100;
+	for (int i = 0; i < 4; i++) {
+		dirs[index] = i;
+		int temp = go(m1, m2, index + 1,dirs);
+		if (ans > temp) ans = temp;
+	}
+	return ans;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n >> m;
+	vector<vector<int>> m1(n, vector<int>(m));
+	vector<vector<int>> m2(n, vector<int>(m));
+	vector<int> dirs;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> m1[i][j];
+			if (m1[i][j] >= 1 && m1[i][j] <= 5) {
+				CCTV cctv; cctv.row = i; cctv.col = j; cctv.what = m1[i][j];
+				tvList.push_back(cctv);
+				dirs.push_back(0);
+			}
+		}
+	}
+	cout << go(m1, m2, 0, dirs) << '\n';
+	return 0;
+}
