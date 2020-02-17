@@ -1,0 +1,65 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int n, m;
+int map[51][51];
+int check(vector<pair<int, int>>&store,vector<pair<int,int>>&hause) {
+
+	int sSize = store.size();
+	int hSize = hause.size();
+
+	int hauseX, hauseY, storeX, storeY, disX, disY;
+	int tempChickenDis, ChickenDis;
+	int sum = 0;
+
+	ChickenDis = 500000;
+	for (int i = 0; i < hSize; i++) {
+		hauseX = hause[i].first; hauseY = hause[i].second;
+		
+		for (int j = 0; j < sSize; j++) {	
+			storeX = store[j].first; storeY = store[j].second;
+			disX = hauseX - storeX; if (disX < 0) disX = -disX;
+			disY = hauseY - storeY; if (disY < 0) disY = -disY;
+			tempChickenDis = disX + disY;
+			ChickenDis = min(ChickenDis, tempChickenDis);
+		}
+		sum += ChickenDis;
+		ChickenDis = 500000;
+	}
+	return sum;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n >> m;
+	vector<pair<int, int>> c;
+	vector<int> num;
+	vector<pair<int, int>> hause;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> map[i][j];
+			if (map[i][j] == 2) c.push_back(make_pair(i, j));
+			if (map[i][j] == 1) hause.push_back(make_pair(i, j));
+		}
+	}
+	for (int i = 0; i < c.size() - m; i++) num.push_back(0);
+	for (int i = 0; i < m; i++) num.push_back(1);
+	int size = num.size();
+	int CityChickenDis = 999999999;
+	
+	do {
+		vector<pair<int, int>> store;
+		for (int i = 0; i < size; i++) {
+			if (num[i] == 1) {
+				int x = c[i].first; int y = c[i].second;
+				store.push_back(make_pair(x, y));
+			}
+			else continue;
+		}
+		int temp = check(store,hause);
+		CityChickenDis = min(CityChickenDis, temp);
+	} while (next_permutation(num.begin(), num.end()));
+	cout << CityChickenDis << '\n';
+	return 0;
+}
