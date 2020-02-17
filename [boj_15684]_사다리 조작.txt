@@ -1,0 +1,70 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+int n, m, h, a, b;
+int map[100][100];
+int start(int c) { //열 입력
+	int r = 1;
+	while (r <= h) {
+		if (map[r][c] == 1) c++;
+		else if (map[r][c] == 2) c--;
+		r++;
+	}
+	return c;
+}
+bool go() {
+	int temp;
+	for (int i = 1; i <= n; i++) {
+		temp = start(i);
+		if (temp != i) return false;
+	}
+	return true;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n >> m >> h;
+	for (int i = 0; i < m; i++) {
+		cin >> a >> b;
+		map[a][b] = 1;
+		map[a][b + 1] = 2;
+	}
+	vector<pair<int, int>> c;
+	for (int i = 1; i <= h; i++) {
+		for (int j = 1; j <= n - 1; j++) {
+			if (map[i][j] == 0 && map[i][j + 1] == 0) {
+				c.push_back(make_pair(i, j));
+			}
+		}
+	}
+	if (go()) {
+		cout << 0 << '\n';
+		return 0;
+	}
+	int size = c.size();
+	int x1, x2, x3, y1, y2, y3;
+	int cnt = -1;
+	for (int i = 0; i < size; i++) {
+		x1 = c[i].first; y1 = c[i].second;
+		if (map[x1][y1]!=0 || map[x1][y1+1]!=0) continue;
+		map[x1][y1] = 1; map[x1][y1 + 1] = 2;
+		if (go()) if (cnt == -1 || cnt > 1) cnt = 1;
+		for (int j = i + 1; j < size; j++) {
+			x2 = c[j].first; y2 = c[j].second;
+			if (map[x2][y2] != 0 || map[x2][y2 + 1] != 0) continue;
+			map[x2][y2] = 1; map[x2][y2 + 1] = 2;
+			if (go()) if (cnt == -1 || cnt > 2) cnt = 2;
+			for (int k = j + 1; k < size; k++) {
+				x3 = c[k].first; y3 = c[k].second;
+				if (map[x3][y3] != 0 || map[x3][y3 + 1] != 0) continue;
+				map[x3][y3] = 1; map[x3][y3 + 1] = 2;
+				if (go()) if (cnt == -1 || cnt > 3) cnt = 3;
+				map[x3][y3] = 0; map[x3][y3 + 1] = 0;
+			}
+			map[x2][y2] = 0; map[x2][y2 + 1] = 0;
+		}
+		map[x1][y1] = 0; map[x1][y1 + 1] = 0;
+	}
+	cout << cnt << '\n';
+	return 0;
+}
