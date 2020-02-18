@@ -1,0 +1,80 @@
+#include<iostream>
+#include<cstring>
+#include<queue>
+#include<vector>
+using namespace std;
+int map[2][50][50];
+int N, L, R;
+int dx[] = { -1,1,0,0 };
+int dy[] = { 0,0,-1,1 };
+bool flag = false;
+vector<int> Psum;
+vector<int> Msum;
+queue <pair<int, int>> q;
+void bfs(int team, int row, int col) {
+	int populSum = map[0][row][col];
+	int memberCnt = 1;
+	map[1][row][col] = team;	
+	q.push(make_pair(row, col));
+	while (!q.empty()) {
+		int x = q.front().first;
+		int y = q.front().second;
+		q.pop();
+		for (int i = 0; i < 4; i++) {
+			int nx = x + dx[i];
+			int ny = y + dy[i];
+			if (nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
+			if (map[1][nx][ny] == 0) {
+				int teamCheck = map[0][nx][ny] - map[0][x][y];
+				if (teamCheck < 0) teamCheck = -teamCheck;
+				if (teamCheck >= L && teamCheck <= R) {
+					flag = true; //연합 발생 했는지 체크
+					map[1][nx][ny] = team; //team 표시
+					q.push(make_pair(nx, ny));
+					populSum += map[0][nx][ny]; //인구수 합
+					memberCnt++; //멤버수 합
+				}
+			}
+		}
+	}
+	Psum.push_back(populSum);
+	Msum.push_back(memberCnt);
+}
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	cin >> N >> L >> R;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cin >> map[0][i][j];
+		}
+	}
+	//bfs로 인구이동 해야 하는지 탐색한다. 
+	int CntChange = 0;
+	while (1) {
+		int teamIndex = 1;
+		memset(map[1], 0, sizeof(map[1]));
+		flag = false;
+		Psum.resize(0);
+		Msum.resize(0);
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (map[1][i][j] == 0) {
+					bfs(teamIndex, i, j);
+					teamIndex++;
+				}
+			}
+		}
+		if (!flag) break; //인구이동이 발생하지 않음
+		CntChange++;
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				int in = map[1][i][j] - 1;
+				map[0][i][j] = (Psum[in] / Msum[in]);
+			}
+		}
+
+	}
+	cout << CntChange << '\n';
+	return 0;
+}
