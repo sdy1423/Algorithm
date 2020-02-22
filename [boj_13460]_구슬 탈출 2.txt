@@ -1,0 +1,122 @@
+#include<iostream>
+#include<queue>
+#include<algorithm>
+using namespace std;
+char map[10][10];
+int n, m;
+struct INFO {
+	int rr, rc, br, bc, cnt;
+};
+INFO info;
+
+int bfs() {
+	int const dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+	bool visited[10][10][10][10] = {false, };
+	queue<INFO> q;
+	q.push(info);
+	visited[info.rr][info.rc][info.br][info.bc] = true;
+
+	int ans = -1;
+	while (!q.empty()) {
+		INFO cur = q.front();
+		q.pop();
+
+		if (cur.cnt > 10) break;
+		
+		//빨간구슬만 구멍에 빠졌으면 끝
+		if (map[cur.rr][cur.rc] == 'O' && map[cur.br][cur.bc] != 'O') {
+			ans = cur.cnt;
+			break;
+		}
+		//일단 next에 전달한다.
+		for (int dir = 0; dir < 4; dir++) {
+			int next_rr = cur.rr;
+			int next_rc = cur.rc;
+			int next_br = cur.br;
+			int next_bc = cur.bc;
+
+			while (1) {
+				if (map[next_rr][next_rc] != '#' && map[next_rr][next_rc] != 'O') {
+					next_rr += dx[dir];
+					next_rc += dy[dir];
+				}
+				else {
+					if (map[next_rr][next_rc] == '#') {
+						next_rr -= dx[dir];
+						next_rc -= dy[dir];
+						
+					}
+					break;
+				}
+			}
+			//blue
+			while (1) {
+				if (map[next_br][next_bc] != '#' && map[next_br][next_bc] != 'O') {
+					next_br += dx[dir];
+					next_bc += dy[dir];
+				}
+				else {
+					if (map[next_br][next_bc] == '#') {
+						next_br -= dx[dir];
+						next_bc -= dy[dir];
+						
+					}
+					break;
+				}
+			}
+
+			//예외처리(같은곳에 멈출경우)
+			if (next_rr == next_br && next_rc == next_bc) {
+				if (map[next_rr][next_rc] != 'O') {
+
+					int redDist = abs(next_rr - cur.rr) + abs(next_rc - cur.rc);
+					int blueDist = abs(next_br - cur.br) + abs(next_bc - cur.bc);
+					//red가 더 멀리서 왔을경우
+					if (redDist > blueDist) {
+						next_rr -= dx[dir];
+						next_rc -= dy[dir];
+					}
+					//블루가 더 멀리서 왔을경우
+					else if (redDist < blueDist) {
+						next_br -= dx[dir];
+						next_bc -= dy[dir];
+					}
+				}
+			}
+			if (visited[next_rr][next_rc][next_br][next_bc] == false) {
+				visited[next_rr][next_rc][next_br][next_bc] == true;
+				INFO next;
+				next.rr = next_rr; 
+				next.rc = next_rc;
+				next.br = next_br;
+				next.bc = next_bc;
+				next.cnt = cur.cnt + 1;
+				q.push(next);
+			}
+		}
+	}
+	return ans;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n >> m;
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> map[i][j];
+			if (map[i][j] == 'R') {
+				info.rr = i, info.rc = j;
+			}
+			if (map[i][j] == 'B') {
+				info.br = i, info.bc = j;
+			}
+		}
+	}
+	info.cnt = 0;
+
+	int ans = bfs();
+	cout << ans << '\n';
+
+	return 0;
+}
