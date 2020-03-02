@@ -1,0 +1,115 @@
+#include<iostream>
+#include<queue>
+#include<algorithm>
+using namespace std;
+int n, m;
+const int dx[] = { -1,0,1,0 };
+const int dy[] = { 0,1,0,-1 };
+// 상 하 좌 우
+char map[10][10];
+struct INFO {
+	int rr, rc, br, bc, cnt, prev_dir;
+};
+INFO info;
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n >> m;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> map[i][j];
+			if (map[i][j] == 'R') {
+				info.rr = i, info.rc = j;
+			}
+			if (map[i][j] == 'B') {
+				info.br = i, info.bc = j;
+			}
+		}
+	}
+	info.cnt = 0;
+	info.prev_dir = -1;
+	queue<INFO> q;
+	bool visited[10][10][10][10] = { 0, };
+	visited[info.rr][info.rc][info.br][info.bc] = 1;
+	q.push(info);
+	int ans = -1;
+	bool flag = false;
+	while (!q.empty()) {
+		INFO cur;
+		cur = q.front();
+		q.pop();
+		for (int dir = 0; dir < 4; dir++) {
+			if (cur.prev_dir != -1) {
+				if (dir == cur.prev_dir || dir == ((cur.prev_dir + 2) % 4)) {
+					continue;
+				}
+			}
+			int next_rr = cur.rr;
+			int next_rc = cur.rc;
+			int next_br = cur.br;
+			int next_bc = cur.bc;
+			while (1) {
+				if (map[next_rr][next_rc] != '#' && map[next_rr][next_rc] != 'O') {
+					next_rr += dx[dir];
+					next_rc += dy[dir];
+					if (map[next_rr][next_rc] == '#') {
+						next_rr -= dx[dir];
+						next_rc -= dy[dir];
+						break;
+					}
+					else if (map[next_rr][next_rc] == 'O') {
+						break;
+					}
+				}
+			}
+			while (1) {
+				if (map[next_br][next_bc] != '#' && map[next_br][next_bc] != 'O') {
+					next_br += dx[dir];
+					next_bc += dy[dir];
+				}
+				if (map[next_br][next_bc] == '#') {
+					next_br -= dx[dir];
+					next_bc -= dy[dir];
+					break;
+				}
+				else if (map[next_br][next_bc] == 'O') {
+					break;
+				}
+			}
+			if (map[next_br][next_bc] == 'O') continue;
+	
+			if (next_rr == next_br && next_rc == next_bc) {
+				int redDir = abs(next_rr - cur.rr) + abs(next_rc - cur.rc);
+				int blueDir = abs(next_br - cur.br) + abs(next_bc - cur.bc);
+				if (redDir > blueDir) {
+					next_rr -= dx[dir];
+					next_rc -= dy[dir];
+				}
+				else {
+					next_br -= dx[dir];
+					next_bc -= dy[dir];
+				}
+			}
+			if (map[next_rr][next_rc] == 'O') {
+				flag = true;
+				ans = cur.cnt + 1;
+				break;
+			}
+
+			if (visited[next_rr][next_rc][next_br][next_bc] == 0) {
+				visited[next_rr][next_rc][next_br][next_bc] = 1;
+				INFO next;
+				next.rr = next_rr, next.rc = next_rc;
+				next.br = next_br, next.bc = next_bc;
+				next.cnt = cur.cnt + 1;
+				next.prev_dir = dir;
+				q.push(next);
+				//cout << next.rr << ' ' << next.rc << ' ' << next.br << ' ' << next.bc << '\n';
+			}
+		}
+		if (flag) break;
+	}
+	if (flag) cout << ans << '\n';
+	else cout << -1 << '\n';
+	return 0;
+}
