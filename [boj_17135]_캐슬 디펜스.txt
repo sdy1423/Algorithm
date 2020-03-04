@@ -1,0 +1,142 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int n, m, d;
+int map[16][15] = { 0, };
+int map2[16][15] = { 0, };
+vector<int> arr;
+struct TARGET {
+	int a_r[3];
+	int a_c[3];
+	int a_dis[3];
+};
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n >> m >> d;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> map2[i][j];
+		}
+	}
+	//next_permutation을 이용한 궁수들 위치 선정을 한다. 
+	map[n][m - 1] = 1, map[n][m - 2] = 1, map[n][m - 3] = 1;
+
+	//현재 궁수들 위치(n행부터 올라가자)
+
+	int ans = -1;
+	do {
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				map[i][j] = map2[i][j];
+			}
+		}
+		//cout << "시작" << '\n';
+		int temp = 0;
+		int count = n;
+		int cur_row = n;
+		bool flag = false;
+
+		while (count--) {
+			TARGET tar;
+			flag = false;
+			for (int i = 0; i < 3; i++) {
+				tar.a_r[i] = 100;
+				tar.a_c[i] = 100;
+				tar.a_dis[i] = 100;
+			}
+			//궁수 turn
+
+			//cur_row에 궁수들 놓고 pos에 궁수들 위치 저장
+			vector<pair<int, int>> pos;
+			for (int i = 0; i < m; i++) {
+				map[cur_row][i] = map[n][i];
+				if (map[cur_row][i] == 1) pos.push_back(make_pair(cur_row, i));
+			}
+
+
+			//타겟을 정한다. 
+
+			//0,1,2번 궁수(3명)
+			for (int wht = 0; wht < 3; wht++) {
+				//한행 한행 내려가면서 타겟을 찾는다.
+				for (int row = cur_row - 1; row >=0; row--) {
+					//그 행의 열 탐색
+					for (int col = 0; col < m; col++) {
+						if (map[row][col] == 1) {//적이 존재할 경우
+
+							//거리계산
+
+							int dis = abs(pos[wht].first - row) + abs(pos[wht].second - col);
+
+							if (dis > d) continue;
+
+
+							//기존 타겟과 비교
+							if (dis < tar.a_dis[wht]) {
+								//더 가까울 경우
+								tar.a_r[wht] = row, tar.a_c[wht] = col, tar.a_dis[wht] = dis;
+							}
+							else if (dis == tar.a_dis[wht]) {
+								//같을경우 더 왼쪽
+								if (col < tar.a_c[wht]) {
+									tar.a_r[wht] = row, tar.a_c[wht] = col, tar.a_dis[wht] = dis;
+								}
+							}
+						}
+						else continue;
+					}
+				}
+			}
+
+
+			//제거 한다.
+			for (int i = 0; i < 3; i++) {
+				if (tar.a_dis[i] == 100) continue;
+				else {
+					if (map[tar.a_r[i]][tar.a_c[i]] == 0) continue;
+					else {
+						map[tar.a_r[i]][tar.a_c[i]] = 0;
+						temp++;
+					}
+				}
+			}
+
+
+			//덮어쓴다
+			for (int i = 0; i < m; i++) {
+				map[cur_row - 1][i] = map[cur_row][i];
+			}
+
+			//궁수들 위치 한칸 올림
+			cur_row--;
+
+			for (int i = 0; i < cur_row; i++) {
+				for (int j = 0; j < m; j++) {
+					if (map[i][j] == 1) {
+						flag = true;
+					}
+				}
+			}
+			if (flag == false) {
+				
+
+				//cout << "현재값 " << temp << '\n';
+				break;
+			}
+
+		
+
+		}
+
+		if (ans == -1) ans = temp;
+		else ans = max(ans, temp);
+
+
+
+
+	} while (next_permutation(map[n], map[n] + m));
+	cout << ans << '\n';
+	return 0;
+}
