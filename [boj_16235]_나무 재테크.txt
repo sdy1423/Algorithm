@@ -1,0 +1,88 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+
+int n, m, k, x, y, age;
+int winter[10][10]; //겨울에 추가될 양분들
+int map[10][10]; 
+const int dx[] = { -1,-1,-1,0,0,1,1,1 };
+const int dy[] = { -1,0,1,-1,1,-1,0,1 };
+vector<int> tree[10][10]; //나무들 나이 저장
+vector<int> five[10][10]; //5의 배수 저장
+vector<int> survive;
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+
+	cin >> n >> m >> k;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> winter[i][j]; //겨울에 추가될 양분
+			map[i][j] = 5; //처음에 들어있는 양분
+		}
+	}
+	for (int i = 0; i < m; i++) {
+		cin >> x >> y >> age;
+		tree[x - 1][y - 1].push_back(age);
+	}
+	int plus[10][10]; //가을에 추가될 나무들 리스트
+	while (k--) {
+		memset(plus, 0, sizeof(plus));
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				survive.resize(0);
+				sort(tree[i][j].begin(), tree[i][j].end()); //어린 나무 순서대로 정렬
+				int dead = 0;
+				for (int l = 0; l < tree[i][j].size(); l++) { //어린 순서대로 체크
+					if (tree[i][j][l] <= map[i][j]) { //양분 먹는다.
+						map[i][j] -= tree[i][j][l]; //땅의 양분을 먹는다.
+						tree[i][j][l] += 1; //나이++
+						survive.push_back(tree[i][j][l]); //살아남은 리스트
+
+						//5의배수인지 체크
+						if (tree[i][j][l] % 5 == 0) {
+							for (int dir = 0; dir < 8; dir++) {
+								int nx = i + dx[dir];
+								int ny = j + dy[dir];
+								if (nx >= 0 && ny >= 0 && nx < n && ny < n) {
+									plus[nx][ny] += 1;
+								}
+							}
+						}
+					}
+					else { //양분을 못먹어서 죽는다.
+						dead += (tree[i][j][l] / 2);
+					}
+				}
+				map[i][j] += dead; //여름에 추가해준다. 
+				tree[i][j] = survive; //살아남은 나무들로 재구성한다.
+				map[i][j] += winter[i][j]; //겨울에 양분 추가
+			}
+		}
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				
+				int cnt = plus[i][j]; //가을에 나무 번식
+				for (int l = 0; l < cnt; l++) {
+					tree[i][j].push_back(1);
+				}
+			}
+		}
+
+
+
+	}
+	int ans = 0;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			ans += (int)tree[i][j].size();
+		}
+	}
+	cout << ans << '\n';
+	return 0;
+}
