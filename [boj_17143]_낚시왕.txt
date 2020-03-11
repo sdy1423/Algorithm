@@ -1,0 +1,123 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+int row, col, m;
+
+const int dx[] = { -1,1,0,0 };
+const int dy[] = { 0,0,1,-1 };
+//위, 아래, 오른쪽, 왼쪽
+
+struct SHARK {
+	int r, c, v, d, s;//행,열,속도,이동방향,크기
+};
+SHARK shark[10001];
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+
+	cin >> row >> col >> m;
+
+	vector<vector<int>> map(row, vector<int>(col, -1));
+
+	for (int i = 0; i < m; i++) {
+		cin >> shark[i].r >> shark[i].c >> shark[i].v >> shark[i].d >> shark[i].s;
+		shark[i].r--;
+		shark[i].c--;
+		shark[i].d--;
+		map[shark[i].r][shark[i].c] = i;
+	}
+
+	int man = -1; //사람위치
+	int sum = 0;
+	int count = col;
+
+	while (count--) {
+
+		//낚시왕 이동
+		man += 1;
+
+		//상어잡기
+		for (int i = 0; i < row; i++) {
+			if (map[i][man] != -1) {
+				sum += shark[map[i][man]].s;
+				shark[map[i][man]].r = 0;
+				shark[map[i][man]].c = 0;
+				shark[map[i][man]].d = 0;
+				shark[map[i][man]].s = 0;
+				shark[map[i][man]].v = 0;
+				map[i][man] = -1;
+				break;
+			}
+		}
+
+		if (man == col - 1) break; //마지막엔 이동하면 안된다
+
+		//상어이동	
+		int nx, ny, cnt, di;
+		for (int i = 0; i < m; i++) {
+			nx = shark[i].r;
+			ny = shark[i].c;
+			cnt = shark[i].v;
+			di = shark[i].d;
+			
+			if (di == 0 || di == 1) cnt %= ((row - 1) * 2);
+			else if (di == 2 || di == 3) cnt %= ((col - 1) * 2);
+
+			while (cnt--) {
+				nx += dx[di];
+				ny += dy[di];
+				//맵을 벗어날 경우
+				if (nx < 0 || ny < 0 || nx >= row || ny >= col) {
+					nx -= dx[di], ny -= dy[di]; //일단 후진
+
+					//방향을 바꾼다
+					if (di % 2 == 1) di--;
+					else di++;
+
+					//한칸 이동
+					nx += dx[di], ny += dy[di];
+					shark[i].d = di;
+				}
+			}
+			shark[i].r = nx;
+			shark[i].c = ny;
+		}
+
+		for (int i = 0; i < row; i++) {
+			for (int j = 0; j < col; j++) {
+				map[i][j] = -1;
+			}
+		}
+
+		for (int i = 0; i < m; i++) {
+			if (map[shark[i].r][shark[i].c] == -1) {
+				map[shark[i].r][shark[i].c] = i;
+			}
+			else {
+				//크기 비교
+				int ind = map[shark[i].r][shark[i].c];
+				if (shark[ind].r == shark[i].r && shark[ind].c == shark[ind].c) {
+					if (shark[ind].s < shark[i].s) {
+						map[shark[i].r][shark[i].c] = i;
+						shark[ind].r = 0;
+						shark[ind].c = 0;
+						shark[ind].d = 0;
+						shark[ind].s = 0;
+						shark[ind].v = 0;
+					}
+					else {
+						map[shark[ind].r][shark[ind].c] = ind;
+						shark[i].r = 0;
+						shark[i].c = 0;
+						shark[i].d = 0;
+						shark[i].s = 0;
+						shark[i].v = 0;
+					}
+				}
+			}
+		}
+	}
+	cout << sum << '\n';
+	return 0;
+}
