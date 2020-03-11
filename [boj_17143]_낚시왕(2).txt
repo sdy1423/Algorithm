@@ -1,0 +1,102 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+int row, col, m;
+
+const int dx[] = { -1,1,0,0 };
+const int dy[] = { 0,0,1,-1 };
+//위, 아래, 오른쪽, 왼쪽
+
+struct SHARK {
+	int vel, dir, size;//속력,이동방향,크기
+};
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+
+	cin >> row >> col >> m;
+
+	vector<vector<SHARK>> map(row, vector<SHARK>(col));
+
+	int r, c, v, d, s;
+	for (int i = 0; i < m; i++) {
+		cin >> r >> c >> v >> d >> s;
+		d--;
+		SHARK sh;
+		sh.vel = v, sh.dir = d, sh.size = s;
+		map[r - 1][c - 1] = sh;
+	}
+
+	int man = -1; //사람위치
+	int sum = 0;
+
+
+	int count = col;
+	while (count--) {
+
+		//낚시왕 이동
+		man += 1;
+
+		//상어 잡기 -> 상어 이동
+
+		vector<vector<SHARK>> temp(row, vector<SHARK>(col)); //임시로 담아놓을 것.	
+
+		bool eaten = false;
+		bool finish = false;
+
+		for (int i = 0; i < row; i++) {
+			if (finish == true) break;
+			for (int j = 0; j < col; j++) {
+
+				//상어잡기
+				if (j == man && map[i][j].size > 0 && eaten == false) {
+					eaten = true;
+					sum += map[i][man].size;
+					map[i][man].dir = 0;
+					map[i][man].size = 0;
+					map[i][man].vel = 0;
+					if (!count) {
+						finish = true;
+						break;
+					}
+				}
+
+				//상어이동
+				if (map[i][j].size > 0) { //상어가 존재 할 경우 이동 시작
+
+					int nx = i, ny = j;
+					int cnt = map[i][j].vel; //속도
+					int di = map[i][j].dir; //방향
+
+					if (di == 0 || di == 1) cnt %= ((row - 1) * 2);
+					else if (di == 2 || di == 3) cnt %= ((col - 1) * 2);
+
+					while (cnt--) { //속도만큼 이동한다.
+						nx += dx[di];
+						ny += dy[di];
+						//맵을 벗어날 경우
+						if (nx < 0 || ny < 0 || nx >= row || ny >= col) {
+							nx -= dx[di], ny -= dy[di]; //일단 후진
+
+							//방향을 바꾼다
+							if (di % 2 == 1) di--;
+							else di++;
+
+							//한칸 이동
+							nx += dx[di], ny += dy[di];
+							map[i][j].dir = di;
+						}
+					}
+					//크기가 더 크면 잡아먹는다.
+					if (map[i][j].size > temp[nx][ny].size) {
+						temp[nx][ny] = map[i][j];
+					}
+				}
+			}
+		}
+		map = temp;
+	}
+	cout << sum << '\n';
+	return 0;
+}
