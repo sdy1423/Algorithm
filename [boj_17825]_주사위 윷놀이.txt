@@ -1,0 +1,134 @@
+#include<iostream>
+#include<algorithm>
+#include<vector>
+using namespace std;
+
+int map[33][6] = { //점수,주사위가 1,2,3,4,5
+{0,1,2,3,4,5}, //0
+{2,2,3,4,5,6}, //1
+{4,3,4,5,6,7},//2
+{6,4,5,6,7,8},//3
+{8,5,6,7,8,9},//4
+{10,21,22,23,26,30},//5
+{12,7,8,9,10,11},//6
+{14,8,9,10,11,12},//7
+{16,9,10,11,12,13},//8
+{18,10,11,12,13,14},//9
+{20,24,25,26,30,31},//10
+{22,12,13,14,15,16},//11
+{24,13,14,15,16,17},//12
+{26,14,15,16,17,18},//13
+{28,15,16,17,18,19},//14
+{30,27,28,29,26,30},//15
+{32,17,18,19,20,32},//16
+{34,18,19,20,32,32},//17
+{36,19,20,32,32,32},//18
+{38,20,32,32,32,32},//19
+{40,32,32,32,32,32},//20
+{13,22,23,26,30,31},//21
+{16,23,26,30,31,20},//22
+{19,26,30,31,20,32},//23
+{22,25,26,30,31,20},//24
+{24,26,30,31,20,32},//25
+{25,30,31,20,32,32},//26
+{28,28,29,26,30,31},//27
+{27,29,26,30,31,20},//28
+{26,26,30,31,20,32},//29
+{30,31,20,32,32,32},//30
+{35,20,32,32,32,32},//31
+{0,32,32,32,32,32},//32
+};
+
+int cube[10]; //움직여야 하는 칸 수
+int horse[4]; //4개의 말들(위치를 값으로 가진다)
+
+int go(int one, int two, int three, int four) {
+	vector<int> arr;
+	//각 말이 사용되는 횟수를 저장한다.
+	for (int i = 0; i < one; i++) arr.push_back(0);
+	for (int i = 0; i < two; i++) arr.push_back(1);
+	for (int i = 0; i < three; i++) arr.push_back(2);
+	for (int i = 0; i < four; i++) arr.push_back(3);
+	sort(arr.begin(), arr.end());
+	
+	int ans = 0,sum; //점수 합
+	int cnt = 1;
+	//말 사용 횟수는 고정되어 있고 순서를 바꿔가면서 시도한다.
+	int what, cu,next;
+	bool ok;
+	do {
+		ok=false;
+		sum = 0;
+		
+		for (int i = 0; i < 4; i++) horse[i] = 0; //말 위치 0으로 초기화
+
+		for (int i = 0; i < 10; i++) {
+
+			what = arr[i]; //움직여야 하는 말
+			if (horse[what] == 32) { //말이 이미 도착에 있으면 이동 불가
+				ok = true;
+				break;
+			}
+			cu = cube[i]; //움직여야 하는 칸 수
+			next = map[horse[what]][cu];
+
+			//그자리에 이미 말이 있으면 불가능한 움직임으로 break
+			for (int j = 0; j < 4; j++) {
+				if (j == what) continue;
+				if (next == horse[j]) {
+					if (horse[j] != 0 && horse[j] != 32) {
+						ok = true;
+					}
+				}
+			}
+			if (ok == true)break;
+
+			//이동
+			horse[what] = next;
+			sum += map[next][0];
+			
+		}
+		//10번 다 끝나면 sum취합하고 ans와 비교
+		if (ok == true) continue; //순서 바꿔서 다시 시도
+		ans = max(ans, sum);
+
+		//for (int i = 0; i < arr.size(); i++) {
+		//	cout << arr[i] << ' ';
+		//}
+		//cout <<cnt<< '\n';
+		//cnt++;
+
+	} while (next_permutation(arr.begin(), arr.end()));
+
+
+	return ans;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+
+	for (int i = 0; i < 10; i++) {
+		cin >> cube[i];
+	}
+	int ans = 0;
+	int temp = 0;
+	int cnt = 1;
+	for (int i1 = 0; i1 <= 10; i1++) {
+		for (int i2 = 0; i2 <= 10; i2++) {
+			for (int i3 = 0; i3 <= 10; i3++) {
+				for (int i4 = 0; i4 <= 10; i4++) {
+					if ((i1 + i2 + i3 + i4) != 10) continue;
+					temp=go(i1, i2, i3, i4);
+					ans = max(ans, temp);
+					
+	
+					//cout << i1 << ' ' << i2 << ' ' << i3 << ' ' << i4 <<' '<<cnt++<< '\n';
+				}
+			}
+		}
+	}
+	cout << ans << '\n';
+
+	//int a= go(3, 4, 2, 1);
+	return 0;
+}
