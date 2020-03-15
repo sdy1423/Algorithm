@@ -1,0 +1,136 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+#define up 0
+#define front 1
+#define right 2
+#define back 3
+#define left 4
+#define down 5
+void clockwise(vector<vector<char>>& a) {
+	char temp;
+	temp = a[0][0];
+	a[0][0] = a[2][0];
+	a[2][0] = a[2][2];
+	a[2][2] = a[0][2];
+	a[0][2] = temp;
+	temp = a[0][1];
+	a[0][1] = a[1][0];
+	a[1][0] = a[2][1];
+	a[2][1] = a[1][2];
+	a[1][2] = temp;
+}
+void R(vector<vector<vector<char>>>& a) {
+	vector<vector<char>> temp = a[up];
+	for (int i = 0; i < 3; i++) {
+		a[up][i][2] = a[front][i][2];
+		a[front][i][2] = a[down][i][2];
+		a[down][i][2] = a[back][i][2];
+		a[back][i][2] = temp[i][2];
+	}
+	clockwise(a[right]);
+}
+
+void L(vector<vector<vector<char>>>& a) {
+	vector<vector<char>> temp = a[up];
+	for (int i = 0; i < 3; i++) {
+		a[up][i][0] = a[back][i][0];
+		a[back][i][0] = a[down][i][0];
+		a[down][i][0] = a[front][i][0];
+		a[front][i][0] = temp[i][0];
+	}
+	clockwise(a[left]);
+}
+
+
+void UP(vector<vector<vector<char>>>& a) {
+	//up -> right -> down -> left
+
+	vector < vector<char>> temp = a[up];
+	a[up] = a[left];
+	a[left] = a[down];
+	a[down] = a[right];
+	a[right] = temp;
+
+	clockwise(a[down]); clockwise(a[down]);
+	clockwise(a[left]); clockwise(a[left]);
+	clockwise(a[front]);
+	clockwise(a[back]);	clockwise(a[back]);	clockwise(a[back]);
+
+}
+void FRONT(vector<vector<vector<char>>>& a) {
+	//front -> right -> back -> left
+	vector<vector<char>> temp = a[front];
+	a[front] = a[left];
+	a[left] = a[back];
+	a[back] = a[right];
+	a[right] = temp;
+
+	clockwise(a[right]); clockwise(a[right]); clockwise(a[right]);
+	clockwise(a[back]); clockwise(a[back]); clockwise(a[back]);
+	clockwise(a[left]); clockwise(a[left]); clockwise(a[left]);
+	clockwise(a[front]); clockwise(a[front]); clockwise(a[front]);
+	clockwise(a[up]); clockwise(a[up]); clockwise(a[up]);
+	clockwise(a[down]);
+}
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	int t;
+	cin >> t;
+	while (t--) {
+		int m;
+		cin >> m;
+		vector<vector<vector<char>>> a;
+		a.push_back(vector<vector<char>>(3, vector<char>(3, 'w')));
+		a.push_back(vector<vector<char>>(3, vector<char>(3, 'r')));
+		a.push_back(vector<vector<char>>(3, vector<char>(3, 'b')));
+		a.push_back(vector<vector<char>>(3, vector<char>(3, 'o')));
+		a.push_back(vector<vector<char>>(3, vector<char>(3, 'g')));
+		a.push_back(vector<vector<char>>(3, vector<char>(3, 'y')));
+		while (m--) {
+			char wht, dir;
+			cin >> wht >> dir;
+			int k = 1;
+			if (dir == '-') k = 3;
+			switch (wht)
+			{
+			case 'U':
+				UP(a);
+				for (int i = 0; i < k; i++) R(a);
+				for (int i = 0; i < 3; i++) UP(a);
+				break;
+			case 'D':
+				UP(a);
+				for (int i = 0; i < k; i++) L(a);
+				for (int i = 0; i < 3; i++) UP(a);
+				break;
+			case 'F':
+				FRONT(a);
+				for (int i = 0; i < k; i++) R(a);
+				for (int i = 0; i < 3; i++) FRONT(a);
+				break;
+			case 'B':
+				FRONT(a);
+				for (int i = 0; i < k; i++) L(a);
+				for (int i = 0; i < 3; i++) FRONT(a);
+				break;
+			case 'L':
+				for (int i = 0; i < k; i++) L(a);
+				break;
+			case 'R':
+				for (int i = 0; i < k; i++) R(a);
+				break;
+			default:
+				break;
+			}
+		}
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				cout << a[up][i][j];
+			}
+			cout << '\n';
+		}
+
+	}
+	return 0;
+}
