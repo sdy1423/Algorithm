@@ -1,0 +1,130 @@
+#include<iostream>
+#include<algorithm>
+#include<vector>
+using namespace std;
+
+int map[100][100];
+int R, C, K;
+int row, col; //3행3열부터 시작
+
+struct Align {
+	int num, cnt;
+	Align(int num, int cnt) :num(num), cnt(cnt) {}
+};
+
+bool cmp(Align& a, Align& b) { //수의 등장 횟수 적은것 부터 -> 같으면 -> 작은거부터
+	if (a.cnt < b.cnt) return true;
+	else if (a.cnt == b.cnt) {
+		if (a.num < b.num) return true;
+	}
+	return false;
+}
+
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> R >> C >> K;
+	R--, C--;
+	row = 3, col = 3;
+	for (int i = 0; i < row; i++) {
+		for (int j = 0; j < col; j++) {
+			cin >> map[i][j];
+		}
+	}
+	int sec = 0;
+	int ans = -1;
+
+	while (1) {
+		if (map[R][C] == K) {
+			ans = sec;
+			break; //break하고 ans 출력
+		}
+		if (sec == 100) break;
+		if (row >= col) { //R연산
+			//행마다 연산 ㄱㄱ
+			int new_col = 0; //새로운 열 개수 세기
+			for (int i = 0; i < row; i++) {
+				vector<Align> vec(101, Align(0, 0));
+				//vector<Align> vec;
+				int cur;
+				for (int j = 0; j < col; j++) {
+					cur = map[i][j]; //현재 숫자
+					if (!cur) continue; //0은 개수를 세지 않는다.
+					if (vec[cur].num == 0) {
+						vec[cur].num = cur;
+						vec[cur].cnt = 1;
+					}
+					else {
+						vec[cur].cnt++;
+					}
+					map[i][j] = 0; 
+				}
+				sort(vec.begin(),vec.end(),cmp);
+				
+				int col_idx = 0, vec_idx = 0, col_cnt = 0;
+				/*cout << i << "행 " << '\n';
+				for (int show = 0; show < vec.size(); show++) {
+					if (vec[show].num == 0) continue;
+					cout << vec[show].num << ' ' << vec[show].cnt << '\n';
+				}
+				*/
+				for (int idx = 0; idx < vec.size(); idx++) {//벡터 순회하면서 옮긴다.
+					if (vec[idx].num == 0) continue; //0은 패스
+					map[i][col_idx++] = vec[idx].num;
+					col_cnt++;
+					map[i][col_idx++] = vec[idx].cnt;
+					col_cnt++;
+				}
+				new_col = max(col_cnt, new_col);
+				
+			}
+			col = new_col; //열의 개수 바꿔준다.
+		}
+		else { //C연산
+			int new_row = 0;
+			for (int j = 0; j < col; j++) {
+				vector<Align> v(101, Align(0, 0));
+				int curr=0;
+				for (int i = 0; i < row; i++) {
+					curr = map[i][j]; //현재 숫자
+					if (!curr) continue; //0은 개수 세지 않는다.
+					if (v[curr].num == 0) {
+						v[curr].num = curr;
+						v[curr].cnt = 1;
+					}
+					else {
+						v[curr].cnt++;
+					}
+					map[i][j] = 0;
+				}
+				sort(v.begin(), v.end(),cmp);
+
+				int row_idx = 0, v_idx = 0, row_cnt = 0;
+				for (int idx = 0; idx < v.size(); idx++) {
+					if (v[idx].num == 0) continue;
+					map[row_idx++][j] = v[idx].num;
+					row_cnt++;
+					map[row_idx++][j] = v[idx].cnt;
+					row_cnt++;
+				}
+				new_row = max(row_cnt, new_row);
+
+			}
+			row = new_row;
+		}
+
+		//cout << '\n';
+		//for (int i = 0; i < row; i++) {
+		//	for (int j = 0; j < col; j++) {
+		//		cout << map[i][j] << ' ';
+		//	}
+		//	cout << '\n';
+		//}
+		//cout << '\n';
+
+		sec++;//연산 끝나면 1초 추가
+
+	}
+	cout << ans << '\n';
+	return 0;
+}
