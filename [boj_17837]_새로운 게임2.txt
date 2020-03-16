@@ -1,0 +1,74 @@
+#include<iostream>
+#include<algorithm>
+#include<vector>
+using namespace std;
+int N, K;
+int color[12][12];
+vector<int> info[12][12];
+struct horse {
+	int x, y, d; //행,열,방향
+}h[10];
+const int dx[] = { 0,0,0,-1,1 };
+const int dy[] = { 0,1,-1,0,0 };
+const int change[] = { 0,2,1,4,3 };
+int turn(int i) { //말을 이동한다.
+	int nx, ny;
+	nx = h[i].x + dx[h[i].d], ny = h[i].y + dy[h[i].d];
+
+	if (nx < 0 || ny < 0 || nx >= N || ny >= N || color[nx][ny] == 2) {
+		//방향 전환
+		h[i].d = change[h[i].d];
+		//반대 위치 탐색
+		nx = h[i].x + dx[h[i].d], ny = h[i].y + dy[h[i].d];
+		if (nx < 0 || ny < 0 || nx >= N || ny >= N || color[nx][ny] == 2) {
+			return 0; 
+		}//방향만 바꾸고 움직이지 않는다.
+	}
+
+	vector<int>& cur = info[h[i].x][h[i].y];
+	vector<int>& next = info[nx][ny];
+
+	auto s = find(cur.begin(), cur.end(), i);
+
+	if (color[nx][ny] == 1) reverse(s, cur.end());
+
+
+	for (auto iter = s; iter != cur.end(); iter++) {
+		h[*iter].x = nx, h[*iter].y = ny;
+		next.push_back(*iter);
+	}
+	cur.erase(s, cur.end());
+
+	return next.size();
+}
+
+int simulation() { //턴을 수행한다.
+	int temp;
+	for (int t = 1; t <= 1000; t++) { //1000번 수행한다.
+		for (int i = 0; i < K; i++) {
+			temp = turn(i);
+			if (temp >= 4) return t;
+		}
+	}
+	return -1;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> N >> K;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cin >> color[i][j];
+		}
+	}
+	int row, col, dir;
+	for (int i = 0; i < K; i++) {
+		cin >> row >> col >> dir;
+		row--, col--;
+		h[i].x = row, h[i].y = col, h[i].d = dir;
+		info[row][col].push_back(i); //말의 인덱스를 입력
+	}
+	int ans = simulation();
+	cout << ans << '\n';
+	return 0;
+}
