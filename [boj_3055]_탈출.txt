@@ -1,0 +1,179 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include<queue>
+using namespace std;
+int R, C;
+const int dx[] = { -1,1,0,0 };
+const int dy[] = { 0,0,-1,1 };
+int ans = 987654321;
+vector<pair<int, int>> water;
+int go_r, go_c;
+
+void Input(vector<vector<char>>& a) {
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
+			cin >> a[i][j];
+			if (a[i][j] == 'S') {
+				go_r = i, go_c = j;
+			}
+			else if (a[i][j] == '*') {
+				water.push_back(make_pair(i, j));
+			}
+		}
+	}
+}
+void Test(vector<vector<int>>& a) {
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
+			cout << a[i][j] << ' ';
+		}
+		cout << '\n';
+	}
+	cout << '\n';
+}
+void Spread(vector<vector<char>>& a) {
+	int temp=0;
+	//물
+	queue<pair<int, int>> q; 
+	vector<vector<bool>>visited(R, vector<bool>(C, false));
+	vector<vector<int>>w(R, vector<int>(C,0)); 
+	//고슴도치
+	vector<vector<int>>g(R, vector<int>(C,0)); 
+	queue<pair<int, int>> gq;
+	vector<vector<bool>>visit_g(R, vector<bool>(C, false));
+
+	//물
+	for (int i = 0; i < water.size(); i++) {
+		int x = water[i].first;
+		int y = water[i].second;
+		q.push(make_pair(x, y));
+		visited[x][y] = true;
+	}
+
+	//고슴도치
+	gq.push(make_pair(go_r, go_c));
+	visit_g[go_r][go_c] = true;
+
+	while (!q.empty() || !gq.empty()) {
+		int water_size = q.size();
+		int go_size = gq.size();
+		
+		while (water_size--) {
+			//물
+			int x = q.front().first;
+			int y = q.front().second;
+			q.pop();
+			for (int dir = 0; dir < 4; dir++) {
+				int nx = x + dx[dir];
+				int ny = y + dy[dir];
+				//if (x == 1 && y == 1)cout << "hi" << '\n';
+				if (nx < 0 || nx >= R || ny < 0 || ny >= C) continue; //범위
+				if (a[nx][ny] == 'X') continue; //돌
+				if (a[nx][ny] == 'D') continue; //비버굴
+				//if (x == 1 && y == 1)cout << "hi there" << '\n';
+				if (!visited[nx][ny]) {
+					visited[nx][ny] = true;
+					w[nx][ny] = w[x][y] + 1;
+					q.push(make_pair(nx, ny));
+				}
+			}
+		/*	cout << "물" << '\n';
+			for (int i = 0; i < R; i++) {
+				for (int j = 0; j < C; j++) {
+					cout << w[i][j] << ' ';
+				}
+				cout << '\n';
+			}
+			cout << "물방문기록" << '\n';
+			for (int i = 0; i < R; i++) {
+				for (int j = 0; j < C; j++) {
+					cout << visited[i][j] << ' ';
+				}
+				cout << '\n';
+			}*/
+
+		}
+
+
+		while (go_size--) {
+			//고슴도치
+			int gx = gq.front().first;
+			int gy = gq.front().second;
+			gq.pop();
+			for (int dir = 0; dir < 4; dir++) {
+				int ngx = gx + dx[dir];
+				int ngy = gy + dy[dir];
+				if (ngx < 0 || ngy < 0 || ngx >= R || ngy >= C) continue;//범위
+				if (a[ngx][ngy] == 'X') continue;//돌
+				if (visited[ngx][ngy] == true) continue; //물
+				
+				if (a[ngx][ngy] == 'D') {//비버굴
+						/////////////////////////////
+					//cout << "이전위치출력:" << gx << ' ' << gy << '\n';
+					temp = g[gx][gy] + 1;
+					ans = min(ans, temp);
+					return;
+				}
+				
+				if (!visit_g[ngx][ngy]) {
+					visit_g[ngx][ngy] = true;
+					g[ngx][ngy] = g[gx][gy] + 1;
+					gq.push(make_pair(ngx, ngy));
+				}
+			}
+		/*	cout << "고슴도치" << '\n';
+			for (int i = 0; i < R; i++) {
+				for (int j = 0; j < C; j++) {
+					cout << g[i][j] << ' ';
+				}
+				cout << '\n';
+			}
+			cout << "고슴도치 방문기록" << '\n';
+			for (int i = 0; i < R; i++) {
+				for (int j = 0; j < C; j++) {
+					cout << visit_g[i][j] << ' ';
+				}
+				cout << '\n';
+			}
+
+			cout << '\n';*/
+
+		}
+
+	}
+	/*cout << "물" << '\n';
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
+			cout << w[i][j] << ' ';
+		}
+		cout << '\n';
+	}
+	cout << '\n';
+	cout << "고슴도치" << '\n';
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
+			cout << g[i][j] << ' ';
+		}
+		cout << '\n';
+	}
+	cout << '\n';*/
+
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+
+	cin >> R >> C;
+	vector<vector<char>> a(R, vector<char>(C));
+
+	Input(a);
+
+	Spread(a);
+
+	if (ans == 987654321) cout << "KAKTUS" << '\n';
+	else cout << ans << '\n';
+
+
+	return 0;
+}
