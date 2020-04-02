@@ -1,0 +1,174 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+const int dx[] = { -1,1,0,0 };
+const int dy[] = { 0,0,-1,1 };
+int N, M, G, R;
+int a[51][51];
+
+vector<pair<int, int>> Candi;
+vector<pair<int, int>> Green;
+vector<pair<int, int>> Red;
+int Candi_size;
+int ans = 0;
+void Spread() {
+	vector<vector<bool>> visited(N, vector<bool>(M, false));
+	vector<vector<int>> b(N, vector<int>(M, 0));
+	queue<pair<int, int>> green;
+	queue<pair<int, int>> red;
+	
+
+
+	for (int i = 0; i < Green.size(); i++) {
+		int x = Green[i].first;
+		int y = Green[i].second;
+		green.push(Green[i]);
+		visited[x][y] = true;
+		b[x][y] = 1;
+	}
+	for (int i = 0; i < Red.size(); i++) {
+		int x = Red[i].first;
+		int y = Red[i].second;
+		red.push(Red[i]);
+		visited[x][y] = true;
+		b[x][y] = 2;
+	}
+	int temp = 0;
+
+	while (1) {
+		int g_size = green.size();
+		int r_size = red.size();
+		vector<pair<int, int>> green_temp;
+
+		while (g_size--) {
+			int gx = green.front().first;
+			int gy = green.front().second;
+			green.pop();
+			for (int dir = 0; dir < 4; dir++) {
+				int ngx = gx + dx[dir];
+				int ngy = gy + dy[dir];
+				if (ngx < 0 || ngx >= N || ngy < 0 || ngy >= M) continue; //범위
+				if (visited[ngx][ngy] == false && b[ngx][ngy] == 0 && a[ngx][ngy] != 0) {
+					b[ngx][ngy] = 3;
+					green_temp.push_back(make_pair(ngx, ngy));
+				}
+
+			}
+		}
+		while (r_size--) {
+			int rx = red.front().first;
+			int ry = red.front().second;
+			red.pop();
+			for (int dir = 0; dir < 4; dir++) {
+				int nrx = rx + dx[dir];
+				int nry = ry + dy[dir];
+				if (nrx < 0 || nrx >= N || nry < 0 || nry >= M) continue;
+				if (a[nrx][nry] == 0) continue;
+				if (visited[nrx][nry] == false && b[nrx][nry] == 0) {
+					b[nrx][nry] = 2;
+					visited[nrx][nry] = true;
+					red.push(make_pair(nrx, nry));
+				}
+				else if (visited[nrx][nry] == false && b[nrx][nry] == 3) {
+					//꽃
+					visited[nrx][nry] = true;
+					b[nrx][nry] = -1;
+					temp++;
+				}
+
+
+			}
+		}
+		
+		for (int i = 0; i < green_temp.size(); i++) {
+			int x = green_temp[i].first;
+			int y = green_temp[i].second;
+			if (visited[x][y] == false && b[x][y] == 3) {
+				visited[x][y] = true;
+				b[x][y] = 1;
+				green.push(make_pair(x, y));
+			}
+		}
+
+		//for (int i = 0; i < N; i++) {
+		//	for (int j = 0; j < M; j++) {
+		//		if (visited[i][j] == false && b[i][j] == 3) {
+		//			visited[i][j] = true;
+		//			b[i][j] = 1;
+		//			green.push(make_pair(i, j));
+		//		}
+		//	}
+		//}
+
+		if ( !red.size() || !green.size()) {
+			ans = max(ans, temp);
+			return;
+		}
+
+
+	}
+}
+
+//선택 안하는경우, 그린배양액 선택하는 경우, 레드배양액 선택하는 경우(3가지)
+void pick(int index, int gcnt, int rcnt) {
+	if (gcnt + rcnt > Candi_size - index) return;
+	if (rcnt == 0 && gcnt == 0) {
+
+		//cout << "그린출력" << '\n';
+		//for (int i = 0; i < Green.size(); i++) {
+		//	cout << Green[i].first << ' ' << Green[i].second << '\n';
+		//}
+		//cout << "레드출력" << '\n';
+		//for (int i = 0; i < Red.size(); i++) {
+		//	cout << Red[i].first << ' ' << Red[i].second << '\n';
+		//}
+
+		Spread();
+
+		return;
+	}
+	if (index == Candi_size) return;
+
+
+	int x = Candi[index].first;
+	int y = Candi[index].second;
+
+
+	//선택 안하는경우
+	pick(index + 1, gcnt, rcnt);
+	
+	//그린
+	if (gcnt > 0) {
+		Green.push_back(make_pair(x, y));
+		pick(index + 1, gcnt - 1, rcnt);
+		Green.pop_back();
+	}
+	if (rcnt > 0) {
+		Red.push_back(make_pair(x, y));
+		pick(index + 1, gcnt, rcnt - 1);
+		Red.pop_back();
+	}
+
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> N >> M >> G >> R;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> a[i][j];
+			if (a[i][j] == 2) {
+				Candi.push_back(make_pair(i, j));
+			}
+		}
+	}
+	Candi_size = Candi.size();
+	/*cout << "Candi_size: " << Candi_size << '\n';
+	pick(0, G, R);*/
+
+	pick(0, G, R);
+	cout << ans << '\n';
+}
