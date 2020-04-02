@@ -1,0 +1,170 @@
+#include<iostream>
+#include<vector>
+#define right 0
+#define down 1
+#define left 2
+#define up 3
+using namespace std;
+int N, M, K;
+const int dx[] = {0,1,0,-1};
+const int dy[] = {1,0,-1,0};
+const int ch[] = { 1,2,3,0 };
+int map[40][40]; //노트북은 최대 40행 40열
+int s_map[100][10][10]; //스티커는 최대 100개, 최대10행,10열
+struct STICKER {
+	int r, c;
+}s[100]; //K개 필요
+void INPUT() {
+	cin >> N >> M >> K;
+	int r, c;
+	//스티커는 최대100개, 최대 10행 10열
+	//vector<vector<vector<int>>> s(N, vector<vector<int>>(10, vector<int>(10, 0)));
+	for (int i = 0; i < K; i++) {
+		cin >> r >> c;
+		s[i].r = r, s[i].c = c;
+		for (int i1 = 0; i1 < r; i1++) {
+			for (int i2 = 0; i2 < c; i2++) {
+				cin >> s_map[i][i1][i2];
+			}
+		}
+		//for (int j = 0; j < r; j++) {
+		//	for (int k = 0; k < c; k++) {
+		//		cout << s[i][j][k] << ' ';
+		//	}
+		//	cout << '\n';
+		//}
+		//cout << '\n';
+	}
+}
+bool FIND_SPACE(int r,int c,int what) {
+	//공간이 없으면 false 반환
+	//공간 차지 가능하면 true 반환
+	//(r,c)는 map에서 스티커의 0행0열 위치
+	//what은 어느 스티커인지 알려준다.
+	int sticker, book;
+	for (int i = 0; i < s[what].r; i++) {
+		for (int j = 0; j < s[what].c; j++) {
+
+			sticker = s_map[what][i][j];
+			book = map[i+r][j+c];
+			
+			if (sticker == 1 && book == 1) {
+				return false;
+			}
+			else continue;
+		}
+	}
+	return true;
+}
+void CHANGE_CLOCKWISE(int what) {
+	int row = s[what].r;
+	int col = s[what].c;
+
+	int n_row = col;
+	int n_col = row;
+
+	int temp[10][10];
+	//90방향으로 회전한다.
+	for (int i = 0; i < col; i++) {
+		int c = 0;
+		for (int j = row - 1; j >= 0; j--) {
+			temp[i][c] = s_map[what][j][i];
+			c++;
+		}
+	}
+	//임시저장한 것을 옮긴다.
+	for (int i = 0; i < n_row; i++) {
+		for (int j = 0; j < n_col; j++) {
+			s_map[what][i][j] = temp[i][j];
+		}
+	}
+	//스티커의 행,열 정보 업데이트
+	s[what].r = n_row;
+	s[what].c = n_col;
+	//cout << "n_row" << n_row << '\n';
+	//cout << "n_col" << n_col << '\n';
+
+	//디버깅용
+
+	//cout << "방향전환 완료" << '\n';
+	//for (int i = 0; i<s[what].r; i++) {
+	//	for (int j = 0; j < s[what].c; j++) {
+	//		cout << s_map[what][i][j] << ' ';
+	//	}
+	//	cout << '\n';
+	//}
+	//cout << '\n';
+
+}
+void PUT_STICKER(int r, int c, int what) {
+	for (int i = 0; i < s[what].r; i++) {
+		for (int j = 0; j < s[what].c; j++) {
+			if (s_map[what][i][j] == 1 && map[i+r][j+c]==0) {
+				map[i+r][j+c] = 1;
+			}
+		}
+	}
+
+	//한번 출력(디버깅용)
+	//cout << "붙였다! " << '\n';
+	//for (int i = 0; i < N; i++) {
+	//	for (int j = 0; j < M; j++) {
+	//		cout << map[i][j] << ' ';
+	//	}
+	//	cout << '\n';
+	//}
+	//cout << '\n';
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	INPUT();
+
+	for (int turn = 0; turn < K; turn++) {
+		//방향은 3번 바꿀 수 있다. 
+		for (int chang_dir = 0; chang_dir <= 3; chang_dir++) {
+			int row = s[turn].r; //현재 스티커의 행
+			int col = s[turn].c; //현재 스티커의 열
+			bool ok = false;
+	
+			//cout << "어느 스티커?: "<<turn << '\n';
+			//cout << "행" << row << "열" << col << '\n';
+
+
+			//공간을 찾기 위한 이중for문
+			for (int i = 0; i <= (N-row); i++) {
+				for (int j = 0; j <= (M-col); j++) {
+					
+					//cout << "현재위치: ";
+					//cout << i<<' '<< j << '\n';
+
+					//공간이 없으면 패스
+					if (FIND_SPACE(i,j,turn) == false) continue;
+					else {
+						//공간이 있으면 붙이면 된다.
+						PUT_STICKER(i, j, turn);
+						ok = true;
+						break;
+					}
+				}
+				if (ok) break;
+			}
+			if (ok) break;
+			
+			if (chang_dir == 3) break;
+			CHANGE_CLOCKWISE(turn);
+		}
+
+
+	}
+	int ans = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			if (map[i][j] == 1) ans++;
+		}
+	}
+
+	cout << ans << '\n';
+
+	return 0;
+}
