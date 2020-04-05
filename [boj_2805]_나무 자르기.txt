@@ -1,0 +1,58 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int N, M;
+vector<int>::iterator max_high;
+vector<int> h;
+int ans = 0;
+
+void Input() {
+	cin >> N >> M;
+	h.resize(N);
+	for (int i = 0; i < N; i++) {
+		cin >> h[i];
+	}
+	max_high = max_element(h.begin(), h.end());
+}
+void Divide(int min_h, int max_h) {
+	//cout << "Divide(" << min_h << "," << max_h << ")" << '\n';
+	int mid = (min_h + max_h) / 2;
+	//cout << "mid: " << mid << '\n';
+	if (mid == min_h) return;
+	else {
+		if (max_h > min_h) {
+			long long temp_sum = 0;
+			for (int i = 0; i < h.size(); i++) {
+				if (mid < h[i]) {
+					temp_sum += (h[i] - mid);
+				}
+			}
+			if (temp_sum >= M) {
+				ans = max(ans, mid);
+				
+				//cout << "temp_sum >= M" << '\n';
+				//cout << "temp_sum: " << temp_sum << '\n';
+				//cout << "ans :" << ans << '\n';
+				
+				Divide(mid, max_h);
+			}
+			else if (temp_sum < M) {
+				//cout << "temp_sum < M" << '\n';
+				//cout << "temp_sum: " << temp_sum << '\n';
+				Divide(min_h, mid);
+			}
+		}
+	}
+	//if ((max_h - min_h) != 1 && max_h > min_h) {
+	//}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+	Input();
+	Divide(0, *max_high);
+	cout << ans << '\n';
+	return 0;
+}
