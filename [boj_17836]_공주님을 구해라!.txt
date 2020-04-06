@@ -1,0 +1,92 @@
+#include<iostream>
+#include<queue>
+#include<algorithm>
+#include<vector>
+using namespace std;
+int N, M, T;
+const int dx[] = { -1,1,0,0 };
+const int dy[] = { 0,0,-1,1 };
+int ans = -1;
+void Test(vector<vector<int>>& a) {
+	cout << "테스트 출력" << '\n';
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cout << a[i][j] << ' ';
+		}
+		cout << '\n';
+	}
+	cout << '\n';
+}
+int dist(int x, int y, int nx, int ny) {
+	return abs(x - nx) + abs(y - ny); //거리
+}
+bool BFS(vector<vector<int>>& a) {
+	vector<vector<int>> b(N, vector<int>(M, 0));
+	vector<vector<bool>>visited(N, vector<bool>(M, false));
+	queue<pair<int, int>> q;
+
+	visited[0][0] = true;
+	q.push(make_pair(0, 0));
+
+	while (!q.empty()) {
+		int x = q.front().first;
+		int y = q.front().second;
+		q.pop();
+		
+		for (int dir = 0; dir < 4; dir++) {
+			int nx = x + dx[dir];
+			int ny = y + dy[dir];
+			if (nx < 0 || ny < 0 || nx >= N || ny >= M) continue; //범위
+			if (a[nx][ny] == 1) continue; //벽
+
+			if (visited[nx][ny] == false) {
+
+
+				if ((b[x][y] + 1) > T) continue;
+
+				if (a[nx][ny] == 2) { // "그람 발견"
+					int temp = b[x][y] + 1;
+					temp += dist(nx, ny, N - 1, M - 1);
+					if (ans == -1) ans = temp;
+					else ans = min(ans, temp);
+					
+					b[nx][ny] = b[x][y] + 1;
+					q.push(make_pair(nx, ny));
+					visited[nx][ny] = true;
+				}
+				else if (a[nx][ny] == 0 && !(nx == N - 1 && ny == M - 1)) {
+					b[nx][ny] = b[x][y] + 1;
+					q.push(make_pair(nx, ny));
+					visited[nx][ny] = true;
+				}
+				else if (a[nx][ny] == 0 && (nx == N - 1 && ny == M - 1)) {
+					b[nx][ny] = b[x][y] + 1;
+					if (ans == -1) ans = b[nx][ny];
+					else ans = min(ans, b[nx][ny]);
+				}
+			}
+		}
+	}
+
+	//Test(b);
+	if (ans == -1) return false;
+	else {
+		if (ans > T) return false;
+		else return true;
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> N >> M >> T;
+	vector<vector<int>> a(N, vector<int>(M));
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> a[i][j];
+		}
+	}
+	if (BFS(a)) cout << ans << '\n';
+	else cout << "Fail" << '\n';
+	//Test(a);
+	return 0;
+}
