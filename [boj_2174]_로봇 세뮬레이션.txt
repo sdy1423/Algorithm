@@ -1,0 +1,106 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+
+#define NORTH 0
+#define EAST 1
+#define SOUTH 2
+#define WEST 3
+
+int A, B, N, M;
+const int dx[] = {-1,0,1,0};
+const int dy[] = {0,1,0,-1};
+const int CL[] = { 3,0,1,2 };
+const int CR[] = { 1,2,3,0 };
+
+struct ROBOT {
+	int r, c, d;
+	//x,y가 아닌 행/열로 변환하여 저장
+};
+vector<ROBOT> robot;
+
+struct ORDER{
+	int who;
+	char d;
+	int cnt;
+	//who의 경우 robot벡터의 index를 의미
+};
+vector<ORDER> order;
+
+bool Check(int who) {
+	int row = robot[who].r;
+	int col = robot[who].c;
+	if (row < 0 || col < 0 || row >= B || col >= A) {
+		cout << "Robot " << who + 1 << " crashes into the wall" << '\n';
+		return false;
+	}
+	for (int i = 0; i < robot.size(); i++) {
+		if (i == who) continue;
+		if (row == robot[i].r && col == robot[i].c) {
+			cout << "Robot " << who + 1 << " crashes into robot " << i + 1 << '\n';
+			return false;
+		}
+	}
+	return true;
+}
+bool Do() {
+	//명령을 차례대로 실행
+	for (int i = 0; i < order.size(); i++) {
+		//명령의 반복 횟수
+		for (int j = 0; j < order[i].cnt; j++) {
+			int who = order[i].who;
+			if (order[i].d == 'L') {
+				robot[who].d = CL[robot[who].d];
+					//robot[i].d = ((robot[i].d + 3) % 4);
+			}
+			else if (order[i].d == 'R') {
+				//robot[i].d = ((robot[i].d + 1) % 4);
+				robot[who].d = CR[robot[who].d];
+			}
+			else if (order[i].d == 'F') {
+				int direct = robot[who].d;
+				if (direct == NORTH) robot[who].r--;
+				else if (direct == EAST) robot[who].c++;
+				else if (direct == SOUTH) robot[who].r++;
+				else if (direct == WEST) robot[who].c--;
+
+				if (!Check(who)) return false;
+				else continue;
+			}	
+		}
+	}
+	return true;
+}
+void Input() {
+	//A:가로, B:세로
+	cin >> A >> B >> N >> M;
+	int x, y, di;
+	char d;
+	for (int i = 0; i < N; i++) {
+		cin >> x >> y >> d;
+		y = B - y;
+		x--;
+		if (d == 'N') di = NORTH;
+		else if (d == 'E') di = EAST;
+		else if (d == 'S') di = SOUTH;
+		else if (d == 'W') di = WEST;
+		//행,열,방향
+		robot.push_back({ y,x,di });
+	}
+	int who, cnt;
+	char dir;
+	for (int i = 0; i < M; i++) {
+		cin >> who >> dir >> cnt;
+		who--;
+		if (dir != 'F') cnt %= 4;
+		order.push_back({ who,dir,cnt });
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	Input();
+	if (!Do()) return 0;
+	else cout << "OK" << '\n';
+	return 0;
+}
