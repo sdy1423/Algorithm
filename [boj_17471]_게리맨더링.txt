@@ -1,0 +1,103 @@
+#include<iostream>
+#include<algorithm>
+#include<queue>
+#include<vector>
+#include<cstring>
+using namespace std;
+int ans = 987654321;
+int N;
+int population[11]; //인구
+vector<int> a[11]; //연결리스트
+
+void Check(vector<int>& team) {
+	//BFS로 가능한 선거구인지 아닌지 체크한다. 
+
+	vector<bool> visited(N, false);
+	queue<pair<int, int>> q;
+
+	//각팀당 시작지점을 정한다.
+	for (int i = 0; i < team.size(); i++){
+		if (team[i] == 0) {
+			q.push(make_pair(i, team[i]));
+			visited[i] = true;
+			break;
+		}
+	}
+	for (int i = 0; i < team.size(); i++) {
+		if (team[i] == 1) {
+			q.push(make_pair(i, team[i]));
+			visited[i] = true;
+			break;
+		}
+	}
+	
+	//BFS
+	while (!q.empty()) {
+		int cur = q.front().first;
+		int cur_team = q.front().second;
+		q.pop();
+		for (int i = 0; i< a[cur].size(); i++) {
+			int next = a[cur][i];
+			if (cur_team != team[next]) continue;//팀이 다르면 패스
+			if (!visited[next]) {
+				visited[next] = true;
+				q.push(make_pair(next, cur_team));
+			}
+		}
+	}
+
+	//인구 차이 구한다.
+	int sum1 = 0, sum2 = 0;
+	for (int i = 0; i < N; i++) {
+		if (visited[i] == false) {
+			return;
+		}
+		if (team[i] == 0) sum1 += population[i];
+		else sum2 += population[i];
+	}
+	int sub = 0;
+	sub = abs(sum1 - sum2);
+	//정답 후보와 비교
+	ans = min(ans, sub);
+}
+void Combination() {
+	//next_permutation을 이용한 조합을 사용해서 팀을 나눈다.
+
+	vector<int> team(N);
+	
+	//1개~(N-1)개를 뽑는다. (ex: pick==1 1명을 뽑는다)
+	for (int pick = 1; pick < N; pick++) {
+		
+		fill(team.begin(), team.end(), 0);
+		for (int i = 0; i < pick; i++) team[i] = 1;
+		sort(team.begin(), team.end());
+
+		do Check(team);
+		while (next_permutation(team.begin(), team.end()));
+	}
+}
+void Input() {
+	cin >> N;
+	for (int i = 0; i < N; i++) cin >> population[i];
+	int cnt = 0;
+	for (int i = 0; i < N; i++) {
+		cin >> cnt;
+		a[i].resize(cnt);
+		for (int j = 0; j < cnt; j++) {
+			cin >> a[i][j];
+			a[i][j]--;
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+
+	Input();
+	Combination();
+	
+	if (ans == 987654321) cout << -1 << '\n';
+	else cout << ans << '\n';
+	
+	return 0;
+}
