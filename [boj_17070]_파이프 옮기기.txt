@@ -1,0 +1,89 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+int N;
+int a[16][16];
+int ans = -1;
+struct PIPE {
+	int r, c, dir;
+};
+//wht 0:가로 1:세로 2:대각선
+bool Check(int dir,int x,int y) {
+	int nx, ny;
+	if (dir == 0) {//가로
+		nx = x, ny = y + 1;
+		if (nx < 0 || ny < 0 || nx >= N || ny >= N) return false;
+		if (a[nx][ny] == 1) return false;
+	}
+	else if (dir == 1) {//세로
+		nx = x + 1, ny = y;
+		if (nx < 0 || ny < 0 || nx >= N || ny >= N) return false;
+		if (a[nx][ny] == 1) return false;
+	}
+	else if (dir == 2) { //대각선
+		nx = x, ny = y + 1;
+		if (nx < 0 || ny < 0 || nx >= N || ny >= N) return false;
+		if (a[nx][ny] == 1) return false;
+
+		nx = x + 1, ny = y;
+		if (nx < 0 || ny < 0 || nx >= N || ny >= N) return false;
+		if (a[nx][ny] == 1) return false;
+
+		nx = x + 1, ny = y + 1;
+		if (nx < 0 || ny < 0 || nx >= N || ny >= N) return false;
+		if (a[nx][ny] == 1) return false;
+	}
+	return true;
+}
+void Move() {
+	queue<PIPE> q;
+	q.push({ 0,1,0 });
+	while (!q.empty()) {
+		int x = q.front().r;
+		int y = q.front().c;
+		int d = q.front().dir;
+		q.pop();
+		//(N,N)에 도달하면 체크
+		if (x == N - 1 && y == N - 1) {
+			if (ans == -1) ans = 1;
+			else ans++;
+			continue;
+		}
+		switch (d)
+		{
+		case 0:
+			if (Check(0, x, y)) q.push({ x,y + 1,0 });
+			if (Check(2, x, y)) q.push({ x + 1,y + 1,2 });
+			break;
+		case 1:
+			if (Check(1, x, y)) q.push({ x + 1,y,1 });
+			if (Check(2, x, y)) q.push({ x + 1,y + 1,2 });
+			break;
+		case 2:
+			if (Check(0, x, y)) q.push({ x,y + 1,0 });
+			if (Check(1, x, y)) q.push({ x + 1,y,1 });
+			if (Check(2, x, y)) q.push({ x + 1,y + 1,2 });
+			break;
+		default:
+			break;
+		}
+	}
+}
+void Input() {
+	cin >> N;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cin >> a[i][j];
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+	Input();
+	Move();
+	if (ans == -1) cout << 0 << '\n';
+	else cout << ans << '\n';
+	return 0;
+}
