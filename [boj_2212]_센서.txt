@@ -1,0 +1,32 @@
+#include<iostream>
+#include<algorithm>
+#include<vector>
+using namespace std;
+int N, K, n;
+vector<int> s,d;
+bool cmp(int a, int b) {
+	return a > b;
+}
+int main() {
+	cin >> N >> K;
+	for (int i = 0; i < N; i++) {
+		cin >> n;
+		s.push_back(n);
+	}
+	sort(s.begin(), s.end());
+	s.erase(unique(s.begin(), s.end()), s.end());
+	int temp = s[0];
+	for (int i = 1; i < s.size(); i++) {
+		int dist = s[i] - temp;
+		d.push_back(dist);
+		temp = s[i];
+	}
+	sort(d.begin(), d.end(), cmp);
+	int ans = 0;
+	for (int i = 0; i < d.size(); i++) {
+		if (i < K - 1) continue;
+		ans += d[i];
+	}
+	cout << ans << '\n';
+	return 0;
+}
