@@ -1,0 +1,74 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<algorithm>
+using namespace std;
+
+int n, m, cnt;
+vector<int> know;
+vector<int> party[52]; //0~49 파티 = 각 파티의 참석한 사람 저장
+vector<int> people[52]; //1~50 사람 = 각 사람이 참석한 파티 저장
+bool possible[51]; //거짓말 불가능 => true;(인덱스는 파티)
+void output() {
+	int ans = 0;
+	for (int i = 0; i < m; i++) {
+		if (!possible[i]) ans++;
+	}
+	cout << ans << '\n';
+}
+void bfs() {
+	queue<int> q; //거짓말 할 수 없는 파티들을 저장
+	int who;
+	for (int i = 0; i < know.size(); i++) {
+		who = know[i]; //진실을 아는 사람
+		for (int j = 0; j < people[who].size(); j++) {
+			int visitedParty = people[who][j]; //진실을 아는 사람이 참석한 파티들
+			if (!possible[visitedParty]) {
+				possible[visitedParty] = true;
+				q.push(visitedParty);//진실을 아는사람이 참여한 파티들을 저장
+			}
+		}
+	}
+	//(진실을 아는 사람들이 참여한 파티)에 참여한 사람들이 참석한 파티도 true로 바꿔야해
+	//(그 파티) 에 참여한 사람들이 참석한 파티도 true로 바꿔야해
+	while (!q.empty()) {
+		int visitedParty = q.front(); //그 파티
+		q.pop();
+		for (int i = 0; i < party[visitedParty].size(); i++) {
+			int visited = party[visitedParty][i]; //그 파티에 참여한 사람 
+			for (int j = 0; j < people[visited].size(); j++) {
+				//(그 파티에 참여한 사람)이 참여한 파티
+				int nextParty = people[visited][j];
+				if (!possible[nextParty]) {
+					possible[nextParty] = true;
+					q.push(nextParty);
+				}
+			}
+		}
+	}
+}
+void input() {
+	cin >> n >> m;
+	cin >> cnt;
+	know.resize(cnt);
+	for (int i = 0; i < cnt; i++) {
+		cin >> know[i];
+	}
+	for (int i = 0; i < m; i++) {
+		cin >> cnt;
+		int who;
+		for (int j = 0; j < cnt; j++) {
+			cin >> who;
+			party[i].push_back(who); //파티 참석자 추가
+			people[who].push_back(i);
+		}
+	}
+	bfs();
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	input();
+	output();
+	return 0;
+}
