@@ -1,0 +1,36 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+typedef long long ll;
+int n;
+ll num[5001],ans = 3e9+1, a[3];
+void sol() {
+	int s, e;
+	for (int i = n - 3; i >= 0; --i) {
+		s = i + 1, e = n - 1;
+		while (s < e) {
+			ll tmp, sum;
+			sum = num[i] + num[s] + num[e], tmp = abs(sum);
+			if (ans > tmp) {
+				ans = tmp;
+				a[0] = num[i], a[1] = num[s], a[2] = num[e];
+			}
+			
+			if (!sum) return;
+			else if (sum > 0) e--;
+			else if (sum < 0) s++;
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr); 
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> num[i];
+	}
+	sort(num, num + n);
+	sol();
+	cout << a[0] << ' ' << a[1] << ' ' << a[2];
+	return 0;
+}
