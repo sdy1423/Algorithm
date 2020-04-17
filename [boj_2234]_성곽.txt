@@ -1,0 +1,115 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<queue>
+#include<algorithm>
+#define down 0
+#define right 1
+#define up 2
+#define left 3
+using namespace std;
+int n, m, cnt = 1, room[51][51],dx[] = { 1,0,-1,0 }, dy[] = { 0,1,0,-1 }; //하 우 상 좌
+string map[51][51];
+vector<int> RoomSizeList;
+vector<int> c[2501];
+bool visited[51][51];
+
+void bfs(int i,int j,int cnt) {
+	visited[i][j] = true;
+	room[i][j] = cnt;
+	queue<pair<int, int>> qu;
+	qu.push({ i,j });
+	int roomSize = 1;
+	while (!qu.empty()) {
+		int x = qu.front().first, y = qu.front().second;
+		qu.pop();
+		int nx, ny;
+		for (int idx = 0; idx < 4; idx++) {
+			if (idx == down) nx = x + dx[down], ny = y + dy[down];
+			else if (idx == right) nx = x + dx[right], ny = y + dy[right];
+			else if (idx == up) nx = x + dx[up], ny = y + dy[up];
+			else if (idx == left) nx = x + dx[left], ny = y + dy[left];
+			if (nx < 0 || ny < 0 || nx >= m || ny >= n) continue; //범위
+			
+			if (map[x][y][idx] == '1') {//벽
+				if (room[nx][ny] > 0 && room[nx][ny] != cnt) 
+					c[cnt].push_back(room[nx][ny]);
+				continue; //벽이므로 패스
+			}
+			else {
+				if (!visited[nx][ny] && !room[nx][ny]) {
+					visited[nx][ny] = true;
+					room[nx][ny] = cnt;
+					qu.push({ nx,ny });
+					roomSize++;
+				}
+			}
+		}
+	}
+	RoomSizeList.push_back(roomSize);
+}
+string change(int num) {
+	int div, tmp;
+	string str;
+	if (num >= 8) div = 8;
+	else if (num >= 4) div = 4, str = "0";
+	else if (num >= 2) div = 2, str = "00";
+	else if (num >= 1) div = 1, str = "000";
+	else div = 0;
+
+	while (div) {
+		tmp = num / div;
+		str.push_back(tmp+'0');
+		num %= div;
+		div /= 2;
+	}
+	if (str.size() < 4) {
+		while (1) {
+			str.push_back(0+'0');
+			if (str.size() == 4) break;
+		}
+	}
+	return str;
+}
+int sumMax = 0;
+void check(int a, int b) { 
+	int sum = RoomSizeList[a - 1] + RoomSizeList[b - 1];
+	sumMax = max(sumMax, sum);
+}
+void sol() {
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < n; j++) {
+			if (!visited[i][j] && !room[i][j]) bfs(i, j, cnt++);
+		}
+	}
+	cnt -= 1;
+	for (int i = 1; i <= cnt; i++) {
+		sort(c[i].begin(), c[i].end());
+		c[i].erase(unique(c[i].begin(), c[i].end()), c[i].end());
+		for (int j = 0; j < c[i].size(); j++) {
+			check(i, c[i][j]);
+		}
+	}
+}
+void input() {
+	cin >> n >> m;
+	int u;
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> u;
+			map[i][j] = change(u);
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+
+	input();
+	sol();
+	
+	cout << cnt << '\n';
+	cout << *max_element(RoomSizeList.begin(), RoomSizeList.end()) << '\n';
+	cout << sumMax << '\n';
+	return 0;
+}
