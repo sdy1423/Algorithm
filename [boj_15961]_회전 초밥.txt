@@ -1,0 +1,46 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+int n, d, k, c, belt[3000001],cnt[3001],ans=0;
+void sol() {
+	int count = 0;
+	for (int i = 0; i < k; i++) {
+		if (!cnt[belt[i]]) count++;		
+		cnt[belt[i]]++;
+	}
+	if (!cnt[c]) count++;
+	ans = max(ans, count);
+	if (!cnt[c]) count--;
+
+ 
+	for (int i = 1; i < n; i++) {	
+		cnt[belt[i - 1]]-=1;
+		if (!cnt[belt[i - 1]]) count -= 1;
+		
+		if (i <= n - k) {
+			if (!cnt[belt[i + k - 1]]) count++;
+			cnt[belt[i + k - 1]]++;
+		}
+		else {
+			int w = ((i + k) % n) - 1;
+			if (!cnt[belt[w]]) count++;
+			cnt[belt[w]]++;
+		}
+
+		if (!cnt[c]) count++;
+		ans = max(ans, count);
+		if (ans == (k + 1)) return;
+		if (!cnt[c]) count--;
+	}
+}
+void input() {
+	cin >> n >> d >> k >> c;
+	for (int i = 0; i < n; i++) cin >> belt[i];
+}
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	input();
+	sol();
+	cout << ans << '\n';
+	return 0;
+}
