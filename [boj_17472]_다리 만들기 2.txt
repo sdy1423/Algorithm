@@ -1,0 +1,154 @@
+#include<iostream>
+#include<queue>
+#include<algorithm>
+#include<cstring>
+#include<vector>
+using namespace std;
+int n, m, dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 }, team = 1, ans = -1;
+
+bool visited[11][11]; //bfs
+bool visit[10];//dfs
+
+struct CORNER {
+	int team, r, c, dir;
+};
+struct INFO {
+	int start, end, length;
+};
+vector<CORNER> corner;
+vector<INFO> info;
+
+vector<int> picked;
+vector<int> arr[8];
+
+void dfs(int cur) {
+	visit[cur] = true;
+	for (int i = 0; i < arr[cur].size(); i++) {
+		int next = arr[cur][i];
+		if (!visit[next]) {
+			dfs(next);
+		}
+	}
+	return;
+}
+void try_bridge() {
+	memset(visit, false, sizeof(visit));
+	for (int i = 0; i < 7; i++) arr[i].resize(0);
+	int tmp = 0;
+	for (int i = 0; i < picked.size(); i++) {
+		int start = info[picked[i]].start;
+		int end = info[picked[i]].end;
+		tmp += info[picked[i]].length;
+		arr[start].push_back(end);
+		arr[end].push_back(start);
+	}
+	for (int i = 1; i <= 6; i++) 
+		for (int j = 0; j < arr[i].size(); j++) 
+			arr[i].erase(unique(arr[i].begin(), arr[i].end()), arr[i].end());
+	//다리 건설이 적절한지 판단하기 위해
+	dfs(1);
+	//방문이 불가한 나라가 존재하면 리턴
+	for (int i = 1; i <= team; i++) if (!visit[i]) return;
+	if (ans == -1) ans = tmp;
+	else ans = min(ans, tmp);
+}
+void combination(int idx, int toPick,vector<bool> &visited) {
+	if(toPick == 0) {
+		//다리를 건설해서 정답의 후보를 추린다.
+		try_bridge();
+		return;
+	}
+	for (int i = idx; i < info.size(); i++) {
+		if (!visited[i]) {
+			visited[i] = true;
+			picked.push_back(i);
+			combination(i, toPick - 1, visited);
+			picked.pop_back();
+			visited[i] = false;
+		}
+	}
+}
+
+
+bool out(int nx, int ny) {
+	if (nx < 0 || ny < 0 || nx >= n || ny >= m) return false;
+	else return true;
+}
+void check(int what,vector<vector<int>> &map) {
+	int cnt = 1, start = corner[what].team, end,r = corner[what].r, c = corner[what].c,dir = corner[what].dir;
+	while (1) {
+		int nr = r + dx[dir], nc = c + dy[dir];
+		if (!out(nr,nc)) break;
+		if (!map[nr][nc]) {
+			cnt += 1;
+			r = nr, c = nc;
+		}
+		else if (map[nr][nc] == team) break;
+		else if (map[nr][nc] != team && map[nr][nc]>0 ) {
+			end = map[nr][nc];
+			if(cnt>1)info.push_back({ start,end,cnt });
+			break;
+		}
+	}
+	return;
+}
+void bfs(vector<vector<int>> &map,int i,int j) {
+	queue<pair<int, int>> q;
+	q.push({ i,j });
+	visited[i][j] = true;
+	map[i][j] = team;
+
+	while (!q.empty()) {
+		int x = q.front().first, y = q.front().second; 
+		q.pop();
+		for (int dir = 0; dir < 4; dir++) {
+			int nx = x + dx[dir], ny = y + dy[dir];
+			if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
+			if (!visited[nx][ny]) {
+				if (map[nx][ny]) {
+					visited[nx][ny] = true;
+					map[nx][ny] = team;
+					q.push({ nx,ny });
+				}
+				else if (!map[nx][ny]) corner.push_back({team,nx,ny,dir});
+			}
+		}
+	}
+}
+void corner_check(vector<vector<int>>& map) {
+	for (int i = 0; i < corner.size(); i++) {
+		check(i,map);
+	}
+}
+void sol(vector<vector<int>> &map) {
+	//bfs => 나라 번호 부여, 각 나라에서 바다 인접한 위치 corner에 푸시
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			if (!visited[i][j] && map[i][j]) {
+				bfs(map, i, j);
+				team++;
+			}
+		}
+	}
+	team--;
+	//corner벡터를 돌면서 다른나라를 가는 최단거리 info에 저장
+	corner_check(map);
+	//조합으로 info중에서 필요한 다리를 뽑는다.
+	vector<bool> visited(info.size(), false);
+	combination(0, team - 1, visited);
+	combination(0, team, visited);
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n >> m;
+	vector<vector<int>>map(n, vector<int>(m));
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> map[i][j];
+		}
+	}
+	sol(map);
+	cout << ans << '\n';
+	return 0;
+}
