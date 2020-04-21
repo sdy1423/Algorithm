@@ -1,0 +1,64 @@
+#include<iostream>
+#include<queue>
+#include<algorithm>
+#include<vector>
+using namespace std;
+int n, a, b;
+int map[500001];
+int ans = 987654321;
+struct INFO {
+	char who;
+	int x, day, cnt;
+	//누구,위치,날짜,칸 수
+};
+vector<INFO> m[500001];
+void check(INFO info) {
+	for (int i = 0; i < m[info.x].size(); i++) {
+		if (info.who != m[info.x][i].who && info.day == m[info.x][i].day && info.x==m[info.x][i].x) {
+			ans = min(ans, info.day);
+		}
+	}
+}
+void sol() {
+	queue<INFO> q;
+	q.push({ 'a',a,0,1 });
+	m[a].push_back(q.front());
+	q.push({ 'b',b,0,1 });
+	m[b].push_back(q.front());
+
+	while (!q.empty()) {
+		char who = q.front().who;
+		int x = q.front().x;
+		int day = q.front().day;
+		int cnt = q.front().cnt;
+
+		check(q.front());
+		q.pop();
+
+		//+방향
+		int nx = x + cnt;
+		if (nx>=1 && nx<=n) {
+			m[nx].push_back({ who,nx,day + 1,cnt * 2 });
+			q.push({ who,nx,day + 1,cnt * 2 });
+		}
+
+		//-방향
+		nx = x - cnt;
+		if (nx >= 1 && nx <= n) {
+			m[nx].push_back({ who,nx,day + 1,cnt * 2 });
+			q.push({ who,nx,day + 1,cnt * 2 });
+		}
+
+
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+
+	cin >> n >> a >> b;
+	sol();
+	if (ans == 987654321) cout << -1 << '\n';
+	else cout << ans << '\n';
+	return 0;
+}
