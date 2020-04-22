@@ -1,0 +1,76 @@
+#include<iostream>
+#include<string>
+#include<cstring>
+using namespace std;
+string str;
+bool sol() {
+	int cnt = 0, fix = -1;
+	char prev = 'a', cur;
+	if (str[0] != 'w') return false;
+
+	for (int i = 0; i < str.size(); i++) {		
+		cur = str[i];
+		switch (cur)
+		{
+		case 'w':
+			if (prev == 'a') { //맨 처음
+				cnt = 1;
+				prev = cur;
+			}
+			else if (prev == 'f') {
+				if (fix != -1 && cnt != fix) return false;
+				cnt = 1;
+				prev = cur;
+			}
+			else if (prev == 'w') {
+				cnt += 1;
+			}
+			else return false;
+			break;
+		case 'o':
+			if (prev == 'w') {
+				fix = cnt;
+				cnt = 1;
+				prev = cur;
+			}
+			else if (prev == 'o') {
+				cnt += 1;
+			}
+			else return false;
+			break;
+		case 'l':
+			if (prev == 'o') {
+				if (cnt != fix)return false;
+				cnt = 1;
+				prev = cur;
+			}
+			else if (prev == 'l') {
+				cnt += 1;
+			}
+			else return false;
+			break;
+		case 'f':
+			if (prev == 'l') {
+				if (cnt != fix) return false;
+				cnt = 1;
+				prev = cur;
+			}
+			else if (prev == cur) {
+				cnt += 1;
+			}
+			else return false;
+			break;
+		default:
+			break;
+		}
+	}
+	if (prev == 'f' && cnt == fix) return true;
+	else return false;
+}
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	cin >> str;
+	if (!sol()) cout << 0 << '\n';
+	else cout << 1 << '\n';
+	return 0;
+}
