@@ -1,0 +1,88 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+int map[11][11], visited[11][12], ans = -1, cnt[5];
+
+bool check(int x, int y, int n) {
+	if (cnt[n - 1] == 5) return false;
+	for (int i = x; i < x + n; i++) {
+		for (int j = y; j < y + n; j++) {
+			if (visited[i][j] || !map[i][j]) return false;
+		}
+	}
+	return true;
+}
+pair<int, int> next(int x, int y) {
+	if (x == 9 && y == 9) return { 9,10 };
+	if (0 <= y && y < 9) y++;
+	else if (y == 9) {
+		x += 1, y = 0;
+	}
+	return { x,y };
+}
+void go(int x,int y){
+	pair<int, int> a;
+	if (x == 9 && y == 10) {
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				if (map[i][j] == 1 && !visited[i][j]) return;
+			}
+		}
+		int tmp = 0;
+		for (int k = 0; k < 5; k++) {
+			tmp += cnt[k];
+		}
+
+		if (ans == -1) {
+			ans = tmp;
+		}
+		else {
+			ans = min(ans, tmp);
+		}
+		return;
+	}
+	if(!map[x][y] || visited[x][y]) {
+		a = next(x, y);
+		go(a.first, a.second);
+		return;
+	}
+	//1
+	if (cnt[0] < 5) {
+		cnt[0] += 1;
+		visited[x][y] = 1;
+		a = next(x, y);
+		go(a.first, a.second);
+		visited[x][y] = 0;
+		cnt[0] -= 1;
+	}
+	//2,3,4,5
+	for (int k = 2; k <= 5; k++) {
+		if (check(x, y, k)) {
+			for (int i = x; i < x + k; i++) {
+				for (int j = y; j < y + k; j++) {
+					visited[i][j] = k;
+				}
+			}
+			cnt[k - 1] += 1;
+			a = next(x, y);
+			go(a.first, a.second);
+			for (int i = x; i < x + k; i++) {
+				for (int j =y; j < y + k; j++) {
+					visited[i][j] = 0;
+				}
+			}
+			cnt[k - 1] -= 1;
+		}
+	}
+} 
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
+			cin >> map[i][j];
+		}
+	}
+	go(0, 0);
+	cout << ans << '\n';
+	return 0;
+}
