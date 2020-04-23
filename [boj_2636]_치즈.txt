@@ -1,0 +1,124 @@
+#include<iostream>
+#include<queue>
+#include<vector>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+int n, m;
+int map[101][101];
+int visited[101][101]; //1:공기 2:치즈 0:구멍
+const int dx[] = { -1,1,0,0 };
+const int dy[] = { 0,0,-1,1 };
+int sec;
+vector <pair<int, int>> edge;
+int cur_cnt;
+int pre_cnt;
+void prev_cnt() {
+	cur_cnt = 0;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			if (map[i][j] == 1) {
+				cur_cnt++;
+			}
+		}
+	}
+}
+
+
+bool out(int nx, int ny) {
+	if (nx < 0 || ny < 0 || nx >= n || ny >= m) return false;
+	else return true;
+}
+
+void air() {
+	memset(visited, 0, sizeof(visited));
+	queue < pair<int, int>> q;
+	q.push({ 0,0 });
+	visited[0][0] = 1;
+	while (!q.empty()) {
+		int x = q.front().first;
+		int y = q.front().second;
+		q.pop();
+		for (int dir = 0; dir < 4; dir++) {
+			int nx = x + dx[dir];
+			int ny = y + dy[dir];
+			if (!out(nx, ny)) continue;
+			if (!visited[nx][ny] && !map[nx][ny]) {
+				visited[nx][ny] = 1;
+				q.push({ nx,ny });
+			}
+		}
+	}
+}
+void cheese(int i,int j) {
+	queue<pair<int, int>> qu;
+	qu.push({ i,j });
+	visited[i][j] = 2;
+	while (!qu.empty()) {
+		int x = qu.front().first;
+		int y = qu.front().second;
+		qu.pop();
+		for (int dir = 0; dir < 4; dir++) {
+			int nx = x + dx[dir];
+			int ny = y + dy[dir];
+			if (!out(nx, ny)) continue;
+			if (visited[nx][ny]==0 && map[nx][ny]==1) {
+				visited[nx][ny] = 2;
+				qu.push({ nx,ny });
+			}		
+			if (visited[nx][ny] == 1) {
+				edge.push_back({ x,y });
+			}
+		}
+	}
+}
+void delete_edge() {
+	for (int i = 0; i < edge.size(); i++) {
+		int x = edge[i].first;
+		int y = edge[i].second;
+		map[x][y] = 0;
+	}
+}
+void sol() {
+	sec = 0;
+	while (1) {
+		prev_cnt();
+		air();
+		edge.resize(0);
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				if (map[i][j]==1 && visited[i][j]==0) {
+					cheese(i, j);
+				}
+			}
+		}
+		edge.erase( unique(edge.begin(), edge.end()) ,  edge.end() );
+		delete_edge();
+		if (!edge.size()) {
+			break;
+		}
+		sec += 1;
+		pre_cnt = cur_cnt;
+	}
+}
+void input() {
+	pre_cnt = 0;
+	cin >> n >> m;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> map[i][j];
+			if (map[i][j] == 1) {
+				pre_cnt++;
+			}
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	input();
+	sol();
+	cout << sec << '\n';
+	cout << pre_cnt << '\n';
+	return 0;
+}
