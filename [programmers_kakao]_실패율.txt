@@ -1,0 +1,40 @@
+#include <string>
+#include <vector>
+#include<algorithm>
+#include <iostream>
+using namespace std;
+struct INFO {
+    int num;
+    float fail;
+};
+vector<INFO> fail;
+bool cmp(INFO a, INFO b) {
+    if (a.fail > b.fail) return true;
+    else if (a.fail == b.fail) {
+        if (a.num < b.num)return true;
+    }
+    return false;
+}
+vector<int> solution(int N, vector<int> stages) {
+    vector<int> answer;
+    float mo, so;
+    for (int i = 1; i <= N; i++) {
+        mo = 0, so = 0;
+        for (int j = 0; j < stages.size(); j++) {
+            if (stages[j] >= i) {
+                mo += 1;
+            }
+            if (stages[j] == i) {
+                so += 1;
+            }
+
+        }
+        if (!mo) fail.push_back({ i,0 });
+        else fail.push_back({ i,so / mo});
+    }
+    sort(fail.begin(), fail.end(), cmp);
+    for (int i = 0; i < fail.size(); i++) {
+        answer.push_back(fail[i].num);
+    }
+    return answer;
+}
