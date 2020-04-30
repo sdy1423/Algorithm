@@ -1,0 +1,60 @@
+#include<string>
+#include<vector>
+#include<iostream>
+#include<sstream>
+#include<map>
+using namespace std;
+struct INFO {
+    string message, id;
+};
+
+vector<string> solution(vector<string> record) {
+    vector<string> answer;
+    vector<INFO> rec;
+    map<string, string> m;
+
+    for (int i = 0; i < record.size(); i++) {
+        stringstream stream;
+        stream.str(record[i]);
+        string message,id,username;
+        stream >> message;
+        stream >> id;
+        stream >> username;
+        if (message == "Enter") {
+            rec.push_back({ message,id });
+            m[id] = username;
+        }
+        else if (message == "Change") {
+            m[id] = username;
+        }
+        else if (message == "Leave") {
+            rec.push_back({ message,id });
+        }
+    }
+    for (int i = 0; i < rec.size(); i++) {
+        string str = "",id;
+        id = rec[i].id;
+        str += m.find(id)->second;
+        if (rec[i].message == "Enter") {
+            str += "님이 들어왔습니다.";
+        }
+        else {
+            str += "님이 나갔습니다.";
+        }
+        answer.push_back(str);
+    }
+    return answer;
+}
+int main() {
+    vector<string> a;
+    a.push_back("Enter uid1234 Muzi");
+    a.push_back("Enter uid4567 Prodo");
+    a.push_back("Leave uid1234");
+    a.push_back("Enter uid1234 Prodo");
+    a.push_back("Change uid4567 Ryan");
+    vector<string> ans = solution(a);
+    for (int i = 0; i < ans.size(); i++) {
+        cout << ans[i] << '\n';
+    }
+    return 0;
+}
