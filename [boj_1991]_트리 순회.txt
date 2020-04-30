@@ -1,0 +1,42 @@
+#include<iostream>
+using namespace std;
+int n;
+char tree[27][2];
+void preorder(char node) {
+	char left = tree[node - 'A'][0];
+	char right = tree[node - 'A'][1];
+	cout << node;
+	if (left != '.')preorder(left);
+	if (right != '.')preorder(right);
+}
+void inorder(char node) {
+	char left = tree[node - 'A'][0];
+	char right = tree[node - 'A'][1];	
+	if (left != '.')inorder(left);
+	cout << node;
+	if (right != '.')inorder(right);
+}
+void postorder(char node) {
+	char left = tree[node - 'A'][0];
+	char right = tree[node - 'A'][1];
+	if (left != '.')postorder(left);
+	if (right != '.')postorder(right);
+	cout << node;
+}
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		char a, b, c;
+		cin >> a >> b >> c;
+		tree[a - 'A'][0] = b; //left
+		tree[a - 'A'][1] = c; //right
+	}
+	preorder('A');
+	cout << '\n';
+	inorder('A');
+	cout << '\n';
+	postorder('A');
+	cout << '\n';
+	return 0;
+}
