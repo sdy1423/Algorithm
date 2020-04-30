@@ -1,0 +1,53 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<set>
+using namespace std;
+
+bool check(vector<int> ans, int num) {
+    
+    for (int i = 0; i < ans.size(); i++) {
+        if ((ans[i]&num)==ans[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+int solution(vector<vector<string>> relation) {
+    int answer = 0;
+    int row = relation.size();
+    int col = relation.front().size();
+
+    vector<int> ans;
+    for (int i = 1; i < (1 << col); i++) {
+        set<string> s;
+        for (int j = 0; j < row; j++) {
+            string str = "";
+            for (int k = 0; k < col; k++) {
+                if (i & (1 << k)) {
+                    str += relation[j][k];
+                }
+            }
+            s.insert(str);
+        }
+        if (s.size() == row && check(ans, i)) {
+            ans.push_back(i);
+        }
+    }
+    answer = ans.size();
+    return answer;
+}
+int main() {
+    vector<vector<string>> relation;
+    relation = {
+        {"100", "ryan", "music", "2"},
+    {"200", "apeach", "math", "2"},
+    {"300", "tube", "computer", "3"},
+    {"400", "con", "computer", "4"},
+    {"500", "muzi", "music", "3"},
+    {"600", "apeach", "music", "2"}
+    };
+    cout << solution(relation) << '\n';
+
+    return 0;
+}
