@@ -1,0 +1,64 @@
+#include<iostream>
+#include<queue>
+#include<string>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+const int dx[] = {-1,1,0,0};
+const int dy[] = {0,0,-1,1};
+int r, c;
+char map[51][51];
+bool visited[51][51];
+int dist[51][51];
+int ans = -1;
+
+void bfs(int x,int y) {
+	memset(visited, 0, sizeof(visited));
+	memset(dist, 0, sizeof(dist));
+	queue<pair<int, int>> qu;
+	qu.push({ x,y });
+	visited[x][y] = true;
+	while (!qu.empty()) {
+		int x = qu.front().first;
+		int y = qu.front().second;
+		qu.pop();
+		for (int dir = 0; dir < 4; dir++) {
+			int nx = x + dx[dir];
+			int ny = y + dy[dir];
+			if (nx < 0 || ny < 0 || nx >= r || ny >= c) continue;
+			if (map[nx][ny] == 'L' && visited[nx][ny] == false) {
+				visited[nx][ny] = true;
+				qu.push({ nx,ny });
+				dist[nx][ny] = dist[x][y] + 1;
+
+				if (ans == -1) ans = dist[nx][ny];
+				else ans = max(ans, dist[nx][ny]);
+			}
+		}
+	}
+
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> r >> c;
+	for (int i = 0; i < r; i++) {
+		string str;
+		cin >> str;
+		for (int j = 0; j < c; j++) {
+			map[i][j] = str[j];
+		}
+	}
+
+	for (int i = 0; i < r; i++) {
+		for (int j = 0; j < c; j++) {
+			if (map[i][j] == 'L') {
+				bfs(i, j);
+			}
+		}
+	}
+
+
+	cout << ans << '\n';
+	return 0;
+}
