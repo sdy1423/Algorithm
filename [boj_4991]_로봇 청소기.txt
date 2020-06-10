@@ -1,0 +1,139 @@
+#include<iostream>
+#include<cstring>
+#include<vector>
+#include<queue>
+#include<algorithm>
+using namespace std;
+int w, h;
+char map[21][21];
+vector<pair<int, int>> dirty;
+pair<int, int> start;
+int ans = -1, tmp = 0, d = 0;
+bool visited[21][21] = { false, };
+int dis[21][21] = { 0, };
+int dx[] = { -1,1,0,0 };
+int dy[] = { 0,0,-1,1 };
+vector<int> arr;
+int save[22][22] = { -1, };
+void dist(int s,int e) {
+	pair<int, int> begin, end;
+	if (s == -1) {
+		begin = { start.first,start.second};
+		end = { dirty[e].first , dirty[e].second };	
+	}
+	else {
+		begin = { dirty[s].first,dirty[s].second };
+		end = { dirty[e].first , dirty[e].second };
+	}
+	queue<pair<int, int>> q;
+	q.push(begin);
+
+	memset(visited, false, sizeof(visited));
+	memset(dis, 0, sizeof(dis));
+
+	visited[begin.first][begin.second] = true;
+	bool flag = false;
+	d = 0;
+	while (!q.empty()) {
+		int x = q.front().first;
+		int y = q.front().second;
+		q.pop();
+		for (int dir = 0; dir < 4; dir++) {
+			int nx = x + dx[dir];
+			int ny = y + dy[dir];
+			if (nx < 0 || ny < 0 || nx >= h || ny >= w) continue;
+			if (map[nx][ny] == 'x') continue;
+			if (!visited[nx][ny]) {
+				if (nx == end.first && ny == end.second) {
+					flag = true;
+					d = dis[x][y] + 1;
+					break;
+				}
+				else {
+					dis[nx][ny] = dis[x][y] + 1;
+					visited[nx][ny] = true;
+					q.push({ nx,ny });
+				}
+			}
+		}
+		if (flag) break;
+	}
+	tmp += d;
+	if (s == -1) {
+		save[21][e] = d;
+	}
+	else {
+		save[s][e] = d;
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+
+	while (1) {
+		cin >> w >> h;
+		if (w == 0 && h == 0) break;
+		dirty.clear();
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				cin >> map[i][j];
+				if (map[i][j] == '*') {
+					dirty.push_back({ i,j });
+				}
+				else if (map[i][j] == 'o') {
+					start = { i,j };
+				}
+			}
+		}
+		memset(save, -1, sizeof(save));
+		arr.clear();
+		for (int i = 0; i < dirty.size(); i++) {
+			arr.push_back(i);
+		}
+		ans = -1;
+		do {
+			tmp = 0;
+			bool flag = false;
+			if (arr.size() >= 1) {
+				if (save[21][arr[0]] == -1) {
+					dist(-1, arr[0]);
+				}
+				else {
+					d = save[21][arr[0]];
+					tmp += d;
+				}
+				if (d == 0) {
+					flag = true;
+				}
+			}
+			if (!flag) {
+				for (int i = 0; i < arr.size() - 1; i++) {
+					if (save[arr[i]][arr[i + 1]]==-1) {
+						dist(arr[i], arr[i+1]);
+					}
+					else {
+						d = save[arr[i]][arr[i + 1]];
+						tmp += d;
+					}
+					if (d == 0) {
+						flag = true;
+						break;
+					}
+				}
+			}
+			if (ans != -1 && tmp > ans) {
+				continue;
+			}
+			if (flag) {
+				ans = -1;
+				break;
+			}
+			if (ans == -1) ans = tmp;
+			else ans = min(ans, tmp);
+		} while (next_permutation(arr.begin(), arr.end()));
+		cout << ans << '\n';
+	}
+	return 0;
+}
+
