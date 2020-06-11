@@ -1,0 +1,60 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+int M, N;
+struct GROW{
+	int zero, one, two;
+};
+GROW grow;
+void Sum(vector<vector<int>>& map, vector<int>& plus) {
+	for (int i = 0; i < M * 2 - 1; i++) {
+		if (i < M) {
+			map[M - i - 1][0] += plus[i];
+		}
+		else {
+			int col = (i % M) + 1;
+			int num = plus[i];
+			for (int j = 0; j < M; j++) {
+				map[j][col] += num;
+			}
+		}
+	}
+}
+void Grow(vector<vector<int>>& map, int zero, int one, int two,vector<int> &plus) {
+	for (int i = zero; i < zero + one; i++) {
+		plus[i] += 1;
+	}
+	for (int i = zero + one; i < zero + one + two; i++) {
+		plus[i] += 2;
+	}
+}
+void Print(vector<vector<int>>& map) {
+	for (int i = 0; i < M; i++) {
+		for (int j = 0; j < M; j++) {
+			cout << map[i][j] << ' ';
+		}
+		cout << '\n';
+	}
+	cout << '\n';
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+
+	cin >> M >> N;
+	vector<vector<int>> map(M, vector<int>(M, 1));
+	vector<GROW> g;
+	for (int i = 0; i < N; i++) {
+		int z, o, t;
+		cin >> z >> o >> t;
+		grow.zero = z, grow.one = o, grow.two = t;
+		g.push_back(grow);
+	}
+	vector<int> plus(M * 2 - 1, 0);
+	for (int day = 0; day < N; day++)
+		Grow(map, g[day].zero, g[day].one, g[day].two, plus);
+	Sum(map, plus);
+	Print(map);
+	return 0;
+}
