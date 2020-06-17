@@ -1,0 +1,121 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+struct FISH {
+	int x, y, dir;
+	bool alive;
+};
+FISH fish[20];
+int MAP[4][4];
+int dx[] = {0,-1,-1,0,1,1,1,0,-1};//1~8
+int dy[] = {0,0,-1,-1,-1,0,1,1,1};
+int ans = -1;
+bool check(int x,int y) {
+	return (x >= 0 && y >= 0 && x < 4 && y < 4);
+}
+void Move_Fish() {
+	for (int i = 1; i <= 16; i++) {
+		if (fish[i].alive == false) continue;
+		int x = fish[i].x;
+		int y = fish[i].y;
+		int dir = fish[i].dir;
+		int nx = x + dx[dir];
+		int ny = y + dy[dir];
+		for (int j = 0; j < 7; j++) {
+			if (!check(nx, ny) || MAP[nx][ny]==-1) {
+				if (dir == 8) dir = 1;
+				else dir += 1;
+				nx = x + dx[dir];
+				ny = y + dy[dir];
+			}
+			else {
+				//Change Fish
+				if (MAP[nx][ny] == 0) {
+					fish[i].x = nx;
+					fish[i].y = ny;
+					MAP[nx][ny] = i;
+					MAP[x][y] = 0;
+				}
+				else {
+					FISH buf = fish[MAP[nx][ny]];
+					fish[MAP[nx][ny]].x = x;
+					fish[MAP[nx][ny]].y = y;
+					fish[i].x = nx;
+					fish[i].y = ny;
+					MAP[x][y] = MAP[nx][ny];
+					MAP[nx][ny] = i;
+
+				}
+				break;
+			}
+		}
+		fish[i].dir = dir;
+	}
+}
+void Copy(int a[][4], int b[][4],FISH fish_a[],FISH fish_b[]) {
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			a[i][j] = b[i][j];
+		}
+	}
+	for (int i = 1; i <= 16; i++) {
+		fish_a[i] = fish_b[i];
+	}
+}
+void DFS(int x, int y, int dir, int sum) {
+	if (ans == -1) ans = sum;
+	else ans = max(ans, sum);
+
+	Move_Fish();
+	//움직인다.
+	int TMP[4][4];
+	FISH TMP_FISH[20];
+	Copy(TMP, MAP,TMP_FISH,fish);
+	for (int i = 1; i <= 3; i++) {
+
+		int nx = x + (dx[dir] * i);
+		int ny = y + (dy[dir] * i);
+		if (!check(nx, ny)) {
+			break;
+		}
+		//움직임 try
+		if (MAP[nx][ny] == -1) continue;
+		if (MAP[nx][ny] == 0) continue;
+
+		//eat
+		int eat = MAP[nx][ny];
+		fish[eat].alive = false;//사망
+		MAP[x][y] = 0;
+		MAP[nx][ny] = -1;
+		DFS(nx, ny, fish[eat].dir, sum + eat);
+		Copy(MAP, TMP,fish,TMP_FISH); //맵 복구
+	}
+}
+void Start() {
+	int Sdir = fish[MAP[0][0]].dir;
+	int Snum = MAP[0][0];
+	fish[Snum].alive = false; //(0,0)물고기 사망
+	MAP[0][0] = -1;
+	DFS(0, 0, Sdir, Snum);
+}
+void Input() {
+	int num, dir;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			cin >> num >> dir;
+			MAP[i][j] = num;
+			fish[num] = { i,j,dir,true };
+		}
+	}
+}
+void Solve() {
+	Input();
+	Start();
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	Solve();
+	cout << ans << '\n';
+	return 0;
+}
