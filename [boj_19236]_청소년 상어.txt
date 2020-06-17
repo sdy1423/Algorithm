@@ -1,0 +1,125 @@
+#include<iostream>
+#include<algorithm>
+#include<queue>
+using namespace std;
+struct FISH {
+	int num, x, y, dir;
+	bool live;
+};
+struct STATE {
+	int map[4][4];//-1이면 shark,0이면 빈공간, 1~16물고기
+	FISH fishes[20]; //0:shark,1~16:물고기
+	int sum;
+};
+FISH fish;
+STATE state;
+queue<STATE> states;
+int ans = -1;
+int dx[] = {10,-1,-1,0,1,1,1,0,-1};
+int dy[] = {10,0,-1,-1,-1,0,1,1,1};
+void sol() {
+	while (!states.empty()) {
+		STATE cur = states.front();
+		states.pop();
+		//물고기 이동 시작
+		for (int i = 1; i <= 16; i++) {		
+			if (!cur.fishes[i].live) continue;//죽은 물고기
+			int dir = cur.fishes[i].dir; //방향
+			int x = cur.fishes[i].x;
+			int y = cur.fishes[i].y;
+			int nx = x + dx[dir]; 
+			int ny = y + dy[dir];
+			for (int j = 0; j < 7; j++) {
+				if (nx < 0 || nx >= 4 || ny < 0 || ny >= 4 || cur.map[nx][ny] == -1) {
+					if (dir == 8) dir = 1;
+					else dir+=1;
+					nx = x + dx[dir];
+					ny = y + dy[dir];
+				}
+				else {
+					int buf1 = cur.map[x][y];
+					int buf2 = cur.map[nx][ny];
+					if (!buf2) {
+						//빈 공간
+						cur.map[x][y] = 0;
+						cur.map[nx][ny] = buf1;
+						cur.fishes[i].x = nx;
+						cur.fishes[i].y = ny;
+					}
+					else {
+						//빈 공간 아님
+						cur.map[x][y] = buf2;
+						cur.map[nx][ny] = buf1;
+						cur.fishes[buf1].x = nx;
+						cur.fishes[buf1].y = ny;
+						cur.fishes[buf2].x = x;
+						cur.fishes[buf2].y = y;
+					}
+					break;
+				}
+			}
+			cur.fishes[i].dir = dir;
+		}
+		//상어 이동 시작
+		int dir = cur.fishes[0].dir;
+		int x = cur.fishes[0].x;
+		int y = cur.fishes[0].y;
+		bool ok = false;
+		for (int i = 1; i <= 3; i++) {
+			STATE tmp = cur;
+			int nx = x + (dx[dir]*i);
+			int ny = y + (dy[dir]*i);
+			if (nx < 0 || ny < 0 || nx >= 4 || ny >= 4) {
+				ok = true;
+				break;
+			}
+			if (!tmp.map[nx][ny]) continue;//물거기가 없는 칸으로 이동 불가
+			
+			ok = true;
+			tmp.fishes[0].x = nx;
+			tmp.fishes[0].y = ny; //상어 이동
+			tmp.fishes[0].dir = tmp.fishes[tmp.map[nx][ny]].dir; //방향을 가진다.
+			tmp.fishes[tmp.map[nx][ny]].live = false;//물고기 사망
+			tmp.sum += tmp.map[nx][ny]; //합 추가
+			tmp.map[x][y] = 0; //상어가 원래 있던 위치는 빈 공간이 된다. 
+			tmp.map[nx][ny] = -1; //새로운 상어의 위치는 -1
+
+			states.push(tmp);
+		}
+		if (ok) {
+			if (ans == -1) ans = cur.sum;
+			else ans = max(ans, cur.sum);
+		}
+	}
+}
+void input() {
+	int num, dir;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			cin >> num >> dir;
+			fish.num = num;
+			fish.dir = dir;
+			fish.x = i;
+			fish.y = j;
+			fish.live = true;
+			state.fishes[fish.num] = fish;
+			state.map[i][j] = fish.num;
+		}
+	}
+	//(0,0)위치 물고기
+	int eaten = state.map[0][0];
+	state.sum = eaten;
+	//상어 초기화
+	state.fishes[0].x = 0, state.fishes[0].y = 0, state.fishes[0].dir = state.fishes[eaten].dir;
+	state.fishes[eaten].live = false;//잡아먹힘
+	state.map[0][0] = -1; //상어는 -1
+	states.push(state);
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	input();
+	sol();
+	cout << ans << '\n';
+	return 0;
+}
