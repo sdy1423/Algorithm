@@ -1,0 +1,42 @@
+#include<iostream>
+using namespace std;
+int G, P, g;
+int p[100002];
+int find(int n) {
+	if (p[n]==n) {
+		return n;
+	}
+	else {
+		return p[n]=find(p[n]);
+	}
+}
+void merge(int a, int b) {
+	a = find(a);
+	b = find(b);
+	if (a == b) return;
+	else {
+		p[b] = a;
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> G >> P;
+	for (int i = 1; i <= G; i++) {
+		p[i] = i;
+	}
+	int ans = 0;
+	for (int i = 0; i < P; i++) {
+		cin >> g;
+		g = find(g);
+		if (!g) {
+			break;
+		}
+		else {
+			ans++;
+			merge(g - 1, g);
+		}
+	}
+	cout << ans << '\n';
+	return 0;
+}
