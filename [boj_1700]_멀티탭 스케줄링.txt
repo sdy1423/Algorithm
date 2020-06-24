@@ -1,0 +1,43 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+int N, K, plug[101], name[101], ans = 987654321;
+void go(int idx, int cnt) {
+	if (idx == K) {
+		ans = min(ans, cnt);
+		return;
+	}
+	if (cnt >= ans) return;
+	bool ok = false;
+	for (int i = 0; i < N; i++) {
+		if (plug[i] == name[idx]) {
+			ok = true;
+			go(idx + 1, cnt);
+		}
+		else if (!plug[i]) {
+			plug[i] = name[idx];
+			ok = true;
+			go(idx + 1, cnt);
+		}
+	}
+	if (!ok) {
+		int tmp;                                                              
+		for (int i = 0; i < N; i++) {
+			tmp = plug[i];
+			plug[i] = name[idx];
+			go(idx + 1,cnt +1);
+			plug[i] = tmp;
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> N >> K;
+	for (int i = 0; i < K; i++) {
+		cin >> name[i];
+	}
+	go(0,0);
+	cout << ans << '\n';
+	return 0;
+}
