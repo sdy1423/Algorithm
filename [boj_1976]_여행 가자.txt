@@ -1,0 +1,44 @@
+#include<iostream>
+using namespace std;
+int N, M, link[201][201], plan[1001], parent[201];
+int find(int n) {
+	if (parent[n] == n) return n;
+	else return parent[n] = find(parent[n]);
+}
+void merge(int a, int b) {
+	a = find(a);
+	b = find(b);
+	if (a == b) return;
+	parent[b] = a;
+}
+void Input() {
+	cin >> N >> M;
+	for (int i = 0; i < N; i++) parent[i] = i;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cin >> link[i][j];
+			if (link[i][j]) merge(i, j);
+		}
+	}
+	for (int i = 0; i < M; i++) {
+		cin >> plan[i];
+		plan[i] -= 1;
+	}
+}
+void Sol(){
+	for (int i = 1; i < M; i++) {
+		if (find(i) != find(i - 1)) {
+			cout << "NO" << '\n';
+			return;
+		}
+	}
+	cout << "YES" << '\n';
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+	Input();
+	Sol();
+	return 0;
+}
