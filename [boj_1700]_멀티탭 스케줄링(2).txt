@@ -1,0 +1,57 @@
+#include<iostream>
+using namespace std;
+int N, K;
+int plug[101];
+int name[101];
+int cnt = 0;
+void Sol() {
+	for (int i = 0; i < K; i++) {
+		bool ok = false;
+		for (int j = 0; j < N; j++) {
+			if (plug[j] == name[i]) {
+				ok = true;
+				break;
+			}
+		}
+		if (ok) continue;
+		ok = false;
+		for (int j = 0; j < N; j++) {
+			if (!plug[j]) {
+				plug[j] = name[i];
+				ok = true;
+				break;
+			}
+		}
+		if (ok) continue;
+		int change = -1, value = -1;
+		for (int j = 0; j < N; j++) {
+			int tmp = 0;
+			for (int k = i + 1; k < K; k++) {
+				if (plug[j] != name[k]) {
+					tmp++;
+				}
+				else break;
+			}
+			if (tmp > value) {
+				change = j;
+				value = tmp;
+			}
+		}
+		plug[change] = name[i];
+		cnt++;
+	}
+}
+void Input() {
+	cin >> N >> K;
+	for (int i = 0; i < K; i++) {
+		cin >> name[i];
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	Input();
+	Sol();
+	cout << cnt << '\n';
+	return 0;
+}
