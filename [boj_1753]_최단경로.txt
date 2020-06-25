@@ -1,0 +1,58 @@
+#include<iostream>
+#include<queue>
+#include<vector>
+using namespace std;
+#define MAX_V 20001
+int V, E, K; //V:정점의 개수, E:간선의 개수, K:시작 정점의 번호
+vector<pair<int, int>> arr[MAX_V]; //인접 리스트 (거리, 목적지)
+bool visited[MAX_V]; //방문 여부
+int dist[MAX_V]; //거리 값 저장
+int INF = 987654321;
+void Print() {
+	for (int i = 0; i < V; i++) {
+		if (dist[i] == INF) cout << "INF" << '\n';
+		else cout << dist[i] << '\n';
+	}
+}
+void Sol() {
+	priority_queue < pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+	fill(dist, dist + MAX_V, INF);
+	dist[K] = 0;
+	pq.push({ 0,K });
+
+	while (!pq.empty()) {
+		int curr = pq.top().second;
+		pq.pop();
+		if (visited[curr]) continue; 
+
+		visited[curr] = true;		
+		//인접하고 아직 방문 안한 정점들의 거리를 갱신한다. 
+		for (int i = 0; i < arr[curr].size(); i++) {
+			int next = arr[curr][i].second;
+			int d = arr[curr][i].first;
+			if (visited[next]) continue; //방문 했으면 continue;
+			if (dist[next] > dist[curr] + d) {
+				dist[next] = dist[curr] + d;
+			}
+			pq.push({ dist[next],next });
+		}
+	}
+	Print();
+}
+void Input() {
+	cin >> V >> E >> K;
+	K--;
+	int u, v, w;
+	for (int i = 0; i < E; i++) {
+		cin >> u >> v >> w;
+		arr[u - 1].push_back({ w,v - 1 });
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+	Input();
+	Sol();
+	return 0;
+}
