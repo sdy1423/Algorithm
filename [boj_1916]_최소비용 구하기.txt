@@ -1,0 +1,44 @@
+#include<iostream>
+#include<queue>
+#include<vector>
+#define MAX_C 1001
+using namespace std;
+typedef pair<int, int> P;
+int N, M, S, E, dist[MAX_C], INF = 987654321;
+bool visited[MAX_C]; //방문여부
+vector<P> arr[MAX_C]; //인접리스트 (비용, 도착지점)
+priority_queue<P, vector<P>, greater<P>> pq;
+void Sol() {
+	fill(dist, dist+MAX_C, INF);
+	dist[S] = 0;
+	pq.push(P(0, S));
+	while (!pq.empty()) {
+		int curr = pq.top().second; pq.pop(); //가장 가까운곳 방문
+		if (visited[curr]) continue;
+		visited[curr] = true;
+		for (int i = 0; i < arr[curr].size(); i++) {//인접한 정류장 비용 갱신
+			int next = arr[curr][i].second, d = arr[curr][i].first;
+			if (visited[next])continue;
+			if (dist[next] > dist[curr] + d)dist[next] = dist[curr] + d;
+			pq.push(P(dist[next],next));
+		}
+	}
+	cout << dist[E] << '\n';
+}
+void Input(){
+	cin >> N >> M; //N:도시개수, M:버스개수
+	int u, v, w;
+	for (int i = 0; i < M; i++) {
+		cin >> u >> v >> w;
+		arr[u - 1].push_back(P(w, v - 1)); //비용, 정류장
+	}
+	cin >> S >> E; //출발, 도착 지점
+	S--, E--;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	Input();
+	Sol();
+	return 0;
+}
