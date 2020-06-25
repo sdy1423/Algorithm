@@ -1,0 +1,67 @@
+#include<iostream>
+#include<queue>
+#include<vector>
+#include<algorithm>
+#define MAX 1001
+using namespace std;
+int N, M, X;
+typedef pair<int, int> P; // 시간, 정점
+vector<P> arr[MAX];
+bool visited[MAX];
+int dist[MAX];
+int INF = 987654321;
+int ans = 0;
+void PriorityQueue(int start) {
+	int temp = 0;
+	for (int go = 0; go < 2; go++) {
+		fill(visited, visited + MAX, false);
+		fill(dist, dist + MAX, INF);
+		priority_queue<P, vector<P>, greater<P>> pq;
+		if (go == 0) {
+			dist[start] = 0;
+			pq.push(P(0, start));	
+		}
+		else {
+			dist[X] = 0;
+			pq.push(P(0, X));
+		}
+		while (!pq.empty()) {
+			int curr = pq.top().second; pq.pop();
+			if (visited[curr]) continue;
+			visited[curr] = true;
+			int next, d;
+			for (int i = 0; i < arr[curr].size(); i++) {
+				next = arr[curr][i].second;
+				d = arr[curr][i].first;
+				if (visited[next]) continue;
+				if (dist[next] > dist[curr] + d) dist[next] = dist[curr] + d;
+				pq.push(P(dist[next], next));
+			}
+		}
+		if (go == 0) temp += dist[X];
+		else temp += dist[start];
+	}
+	ans = max(ans, temp);
+}
+void Sol() {
+	for (int i = 0; i < N; i++) {
+		PriorityQueue(i);
+	}
+	cout << ans << '\n';
+}
+void Input() {
+	cin >> N >> M >> X;
+	X--;
+	int u, v, w;
+	for (int i = 0; i < M; i++) {
+		cin >> u >> v >> w;
+		arr[u - 1].push_back(P(w, v - 1));
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	Input();
+	Sol();
+	return 0;
+}
