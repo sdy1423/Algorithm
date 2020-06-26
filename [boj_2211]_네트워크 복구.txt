@@ -1,0 +1,79 @@
+#include<iostream>
+#include<queue>
+#include<vector>
+#define MAX 1000
+using namespace std;
+typedef pair<int, int> P;
+int M, N;
+vector<P> arr[MAX + 1];
+int dist[MAX + 1];
+bool visited[MAX + 1];
+priority_queue<P, vector<P>, greater<P>> pq;
+int INF = 987654321;
+bool check[MAX + 1][MAX + 1];
+vector<P> road[MAX + 1]; //출발,도착
+void Print() {
+	int s, e;
+	vector<P> ans;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < road[i].size(); j++) {
+			s = road[i][j].first;
+			e = road[i][j].second;
+			if (check[s][e] && check[e][s]) continue;
+			check[s][e] = true;
+			check[e][s] = true;
+			ans.push_back(P(s, e));
+		}
+	}
+	cout << ans.size() << '\n';
+	for (int i = 0; i < ans.size(); i++) {
+		cout << ans[i].first+1 << ' ' << ans[i].second+1 << '\n';
+	}
+}
+void Sol() {
+	fill(dist, dist + MAX + 1, INF);
+	dist[0] = 0;
+	pq.push(P(0, 0));
+	while (!pq.empty()) {
+		int curr = pq.top().second;
+		pq.pop();
+		if (visited[curr])continue;
+		visited[curr] = true;
+		int next, d;
+		for (int i = 0; i < arr[curr].size(); i++) {
+			next = arr[curr][i].second;
+			d = arr[curr][i].first;
+			if (visited[next]) continue; 
+			if (dist[next] > dist[curr] + d) {
+				dist[next] = dist[curr] + d;
+				if (dist[next] == INF) {
+					road[next].clear();
+					road[next].push_back(P(curr, next));
+				}
+				else {
+					road[next].clear();
+					road[next] = road[curr];
+					road[next].push_back(P(curr, next));
+				}
+			}
+			pq.push(P(dist[next], next));
+		}
+	}
+}
+void Input() {
+	cin >> N >> M;
+	int a, b, c;
+	for (int i = 0; i < M; i++) {
+		cin >> a >> b >> c;
+		arr[a - 1].push_back(P(c, b - 1));
+		arr[b - 1].push_back(P(c, a - 1));
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	Input();
+	Sol();
+	Print();
+	return 0;
+}
