@@ -1,0 +1,61 @@
+#include<iostream>
+#include<algorithm>
+#include<vector>
+#define MAX_V 1002
+using namespace std;
+struct INFO {
+	int u, v, cost;
+};
+vector<INFO> info;
+int N, M;
+int p[MAX_V];
+int ans; // 비용의 총합
+int cnt; //간선개수가 N-1이면 break;하도록
+bool cmp(INFO a, INFO b) {
+	if (a.cost < b.cost) return true;
+	else if (a.cost == b.cost) {
+		if (a.u < b.u)return true;
+		else if (a.u == b.u) {
+			if (a.v < b.v)return true;
+			else return false;
+		}
+	}
+	return false;
+}
+int find(int n) {
+	if (p[n] == n) return n;
+	return p[n] = find(p[n]);
+}
+void merge(int a, int b) {
+	a = find(a);
+	b = find(b);
+	if (a == b) return;
+	p[b] = a;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> N >> M;
+	int a, b, c;
+	for (int i = 0; i < M; i++) {
+		cin >> a >> b >> c;
+		info.push_back({ a,b,c });
+		if (!p[a]) p[a] = a;
+		if (!p[b]) p[b] = b;
+	}
+	sort(info.begin(), info.end(), cmp);
+	int u, v;
+	for (int i = 0; i < info.size(); i++) {
+		if (cnt == N - 1) break;
+		u = find(info[i].u);
+		v = find(info[i].v);
+		if (u == v) continue;
+		else {
+			cnt += 1;
+			ans += info[i].cost;
+			merge(u, v);
+		}
+	}
+	cout << ans << '\n';
+	return 0;
+}
