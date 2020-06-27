@@ -1,0 +1,105 @@
+#include<iostream>
+#include<queue>
+#include<vector>
+#include<cstring>
+#include<algorithm>
+#define MAX_V 1501
+using namespace std;
+typedef pair<int, int> P;
+int R, C;
+int dx[] = { -1,1,0,0 }, dy[] = { 0,0,-1,1 };
+char map[MAX_V][MAX_V];
+int lake_map[MAX_V][MAX_V];
+vector<P> swan;
+queue<P> merge_q, melt_q;
+int day = 0;
+int p[MAX_V * MAX_V];
+bool visited[MAX_V][MAX_V];
+int find(int n) {
+	if (p[n] == n) return n;
+	return p[n] = find(p[n]);
+}
+void merge(int a, int b) {
+	a = find(a);
+	b = find(b);
+	if (a == b)return;
+	p[b] = a;
+}
+void Merge_bfs() {
+	int x, y, nx, ny;
+	while (!merge_q.empty()) {
+		x = merge_q.front().first;
+		y = merge_q.front().second;
+		merge_q.pop();
+		melt_q.push(P(x, y));
+		for (int dir = 0; dir < 4; dir++) {
+			nx = x + dx[dir];
+			ny = y + dy[dir];
+			if (nx < 0 || ny<0 || nx>R || ny >= C)continue;
+			if (map[nx][ny] == '.' || map[nx][ny] == 'L') {
+				merge(lake_map[x][y],lake_map[nx][ny]);
+			}
+		}
+	}
+}
+void Melt_bfs() {
+	int x, y, nx, ny;
+	while (!melt_q.empty()) {
+		x = melt_q.front().first;
+		y = melt_q.front().second;
+		melt_q.pop();
+		for (int dir = 0; dir < 4; dir++) {
+			nx = x + dx[dir];
+			ny = y + dy[dir];
+			if (nx < 0 || ny<0 || nx>R || ny >= C)continue;
+			if (map[nx][ny] == 'X') {
+				map[nx][ny] = '.';
+				lake_map[nx][ny] = lake_map[x][y];
+				merge_q.push(P(nx, ny));
+			}
+		}
+	}
+}
+bool Check() {
+	//같으면 true
+	int a = find(lake_map[swan[0].first][swan[0].second]);
+	int b = find(lake_map[swan[1].first][swan[1].second]);
+	if (a==b) return true;
+	else return false;
+}
+
+void Sol() {
+	while (1) {
+		Merge_bfs();
+		if (Check())break;
+		Melt_bfs();
+		day += 1;
+	}
+	cout << day << '\n';
+}
+void Input() {
+	cin >> R >> C;
+	int cnt = 1;
+	for (int i = 0; i < R; i++) {
+		for (int j = 0; j < C; j++) {
+			cin >> map[i][j];
+			if (map[i][j] == 'L' || map[i][j] == '.') {
+				merge_q.push(P(i, j));
+				lake_map[i][j] = cnt;
+				p[cnt] = cnt;
+				cnt += 1;
+				if (map[i][j] == 'L') {
+					swan.push_back(P(i, j));
+				}
+			}
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+	Input();
+	Sol();
+	return 0;
+}
