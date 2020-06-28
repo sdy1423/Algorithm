@@ -1,0 +1,43 @@
+#include<algorithm>
+#include<iostream>
+#include<vector>
+using namespace std;
+int V, E;
+int parent[10001];
+int cnt, ans;
+vector<pair<int, pair<int, int>>> graph;//가중치,u,v
+int find(int n) {
+	if (parent[n] == n) return n;
+	return parent[n] = find(parent[n]);
+}
+void merge(int a, int b) {
+	a = find(a);
+	b = find(b);
+	if (a == b)return;
+	parent[b] = a;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> V >> E;
+	int a, b, c;
+	
+	for (int i = 0; i < E; i++) {
+		cin >> a >> b >> c;
+		graph.push_back({ c,{a,b} });
+		if (!parent[a])parent[a] = a;
+		if (!parent[b])parent[b] = b;
+	}
+	sort(graph.begin(), graph.end());
+	int u, v;
+	for (int i = 0; i < graph.size(); i++) {
+		if (cnt == V - 1) break;
+		u = find(graph[i].second.first);
+		v = find(graph[i].second.second);
+		if (u == v) continue;
+		merge(u, v);
+		ans += graph[i].first;
+	}
+	cout << ans << '\n';
+	return 0;
+}
