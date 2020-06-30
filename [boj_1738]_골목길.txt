@@ -1,0 +1,73 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#define INF 987654321
+using namespace std;
+int n, m, u, v, w;
+vector<pair<int, int>> arr[102];
+vector<int> rev[102];
+int dist[102];
+int pre[102];
+bool visited[102];
+void go(int num) {
+	if (pre[num] == 0) cout << num << ' ';
+	else {
+		go(pre[num]);
+		cout << num << ' ';
+	}
+}
+void Belman() {
+	int next, d;
+	dist[1] = 0;
+	bool ok = false;
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= n; j++) {
+			for (auto& p : arr[j]) {
+				next = p.first;
+				d = p.second;
+				if (dist[j] != INF && dist[next] > dist[j] + d) {
+					dist[next] = dist[j] + d;
+					pre[next] = j;
+					if (i == n && visited[next]) ok = true;
+				}
+			}
+		}
+	}
+	if (ok)cout << -1 << '\n';
+	else {
+		go(n);
+		cout << '\n';
+	}
+}
+void BFS() {
+	queue<int> q;
+	q.push(n);
+	while (!q.empty()) {
+		int cur = q.front();
+		q.pop();
+		int next;
+		for (int i = 0; i < rev[cur].size(); i++) {
+			next = rev[cur][i];
+			if (visited[next])continue;
+			visited[next] = true;
+			q.push(next);
+		}
+	}
+}
+void Input() {
+	cin >> n >> m;
+	for (int i = 0; i < m; i++) {
+		cin >> u >> v >> w;
+		rev[v].push_back(u);
+		arr[u].push_back({ v,-w });
+		if (!dist[u]) dist[u] = INF;
+		if (!dist[v]) dist[v] = INF;
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	Input();
+	BFS(); //BFS로 음의 사이클을 찾아라!
+	Belman();
+	return 0;
+}
