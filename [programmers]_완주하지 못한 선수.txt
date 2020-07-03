@@ -1,0 +1,24 @@
+#include <string>
+#include <map>
+#include<iostream>
+using namespace std;
+map<string, int> a;
+string solution(vector<string> participant, vector<string> completion) {
+    string ans = "";
+    int num;
+    for (int i = 0; i < participant.size(); i++) {
+        num = a[participant[i]];
+        a[participant[i]] = --num;
+    }
+    for (int i = 0; i < completion.size(); i++) {
+        num = a[completion[i]];
+        a[completion[i]] = --num;
+    }
+    for (int i = 0; i < participant.size(); i++) {
+        if (a[participant[i]]) {
+            ans += participant[i];
+            break;
+        }
+    }
+    return ans;
+}
