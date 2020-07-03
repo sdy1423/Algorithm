@@ -1,0 +1,37 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int n, d, w, ans;
+struct TASK {
+	int score, idx, limit;
+};
+vector<TASK> task;
+bool cmp(TASK a, TASK b) {
+	if (a.score > b.score)return true;
+	return false;
+}
+bool visited[1001];
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> d >> w;
+		task.push_back({ w,i,d });
+	}
+	sort(task.begin(), task.end(),cmp);
+	int limit;
+	for (int i = 0; i < task.size(); i++) {
+		limit = task[i].limit;
+		for (int j = limit; j > 0; j--) {
+			if (visited[j])continue;
+			else {
+				visited[j] = true;
+				ans += task[i].score;
+				break;
+			}
+		}
+	}
+	cout << ans << '\n';
+	return 0;
+}
