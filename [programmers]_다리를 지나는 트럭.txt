@@ -1,0 +1,36 @@
+#include<string>
+#include<vector>
+#include<queue>
+using namespace std;
+
+int solution(int bridge_length, int weight, vector<int> truck_weights) {
+    int max_v = truck_weights.size(),cnt=0,sec=1,cur_weight=0;
+    queue<pair<int,int>> qu; 
+    while(1){
+        int qu_size = qu.size();
+        while(qu_size--){
+            int qu_w = qu.front().first; //무게
+            int qu_lo = qu.front().second; //위치    
+            qu.pop();
+            if(qu_lo==bridge_length-1){
+                cur_weight -= qu_w;
+            }else{
+                qu.push({qu_w,qu_lo+1});
+            }
+        }
+
+        if(cnt<max_v){
+            int truck_w = truck_weights[cnt];
+            if(truck_w<=weight-cur_weight){
+                cur_weight+=truck_w;
+                qu.push({truck_w,0});
+                cnt++;
+            }
+        }
+
+        if(qu.empty())break;
+
+        sec++;
+    }
+    return sec;
+}
