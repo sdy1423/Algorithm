@@ -1,0 +1,23 @@
+#include<iostream>
+using namespace std;
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	int n;
+	cin >> n;
+	int c = 10;
+	if (n > 10) {
+		while (n > c) {
+			int tmp = n % c;
+			if (c == 10) {
+				if (tmp >= 5)n += c;
+			}
+			else {
+				if (tmp >= 5*(c/10))n += c;
+			}
+			n -= tmp;
+			c *= 10;
+		}
+	}
+	cout << n << '\n';
+	return 0;
+}
