@@ -1,0 +1,46 @@
+#include<iostream>
+#define MAX_V 100001
+using namespace std;
+int n, m;
+int arr[MAX_V];
+int cnt, tmp, lo, hi, mid;
+bool go() {
+	mid = (lo + hi) / 2;
+	cnt = 0, tmp = 0;
+	for (int i = 0; i < n; i++) {
+		if (arr[i] > mid)return false;
+		if (tmp + arr[i] > mid) {
+			cnt += 1;
+			tmp = arr[i];
+		}
+		else {
+			tmp += arr[i];
+		}
+	}
+	if (cnt >= m)return false;
+	else return true;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n >> m;
+	int sum = 0, min = 10001;
+	for (int i = 0; i < n; i++) {
+		cin >> arr[i];
+		sum += arr[i];
+		if (min > arr[i])min = arr[i];
+	}
+	lo = min, hi = sum;
+	int ans;
+	while (lo <= hi) {
+		if (go()) {
+			hi = mid - 1;
+			ans = mid;
+		}
+		else {
+			lo = mid + 1;
+		}
+	}
+	cout << ans << '\n';
+	return 0;
+}
