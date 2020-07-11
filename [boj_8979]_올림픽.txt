@@ -1,0 +1,42 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+struct MyStruct {
+	int idx, a, b, c;
+};
+vector<MyStruct> v;
+int n, k, a, b, c, d, ans;
+bool cmp(MyStruct A, MyStruct B) {
+	if (A.a > B.a)return true;
+	else if (A.a == B.a) {
+		if (A.b > B.b)return true;
+		else if (A.b == B.b) {
+			if (A.c > B.c)return true;
+			else if (A.c == B.c) {
+				if (A.idx == k) {
+					return true;
+				}
+				else false;
+			}
+		}
+	}
+	return false;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n >> k;
+	for (int i = 0; i < n; i++) {
+		cin >> a >> b >> c >> d;
+		v.push_back({ a,b,c,d });
+	}
+	sort(v.begin(), v.end(), cmp);
+	for (int i = 0; i < n; i++) {
+		if (v[i].idx == k) {
+			cout << i + 1 << '\n';
+			break;
+		}
+	}
+	return 0;
+}
