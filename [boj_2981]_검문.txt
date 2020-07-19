@@ -1,0 +1,30 @@
+#include<iostream>
+#include<algorithm>
+#include<vector>
+using namespace std;
+int n, gcd;
+vector<int> vec, ans;
+int GCD(int a, int b) {
+	if (!(a % b))return b;
+	return GCD(b, a % b);
+}
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n;
+	vec.resize(n);
+	for (int i = 0; i < n; i++) cin >> vec[i];
+	sort(vec.begin(), vec.end());
+	gcd = vec[1] - vec[0];
+	for (int i = 2; i < n; i++) gcd = GCD(gcd, vec[i] - vec[i - 1]);
+	for (int i = 2; i * i <= gcd; i++) 
+		if (!(gcd % i)) {
+			ans.push_back(gcd / i);
+			ans.push_back(i);
+		}
+	ans.push_back(gcd);
+	sort(ans.begin(), ans.end());
+	ans.erase(unique(ans.begin(), ans.end()), ans.end());
+	for (int i = 0; i < ans.size(); i++)cout << ans[i] << ' ';
+	cout << '\n';
+	return 0;
+}
