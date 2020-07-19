@@ -1,0 +1,58 @@
+#include<iostream>
+#include<deque>
+#include<vector>
+using namespace std;
+vector<int> pick;
+deque<int> de;
+int n, m, num, cur, ans;
+void Input() {
+	cin >> n >> m;
+	for (int i = 1; i <= n; i++) {
+		de.push_back(i); //1부터 n까지
+	}
+	for (int i = 0; i < m; i++) {
+		cin >> num;
+		pick.push_back(num);
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	Input();
+	for (int i = 0; i < m; i++) {
+		int cur_element = pick[i];
+		deque<int> left, right;
+		left = de, right = de;
+		int tmp1 = 0;
+		while (1) {
+			if (left[0] == cur_element) {
+				left.pop_front();
+				break;
+			}
+			int pop = left.front();
+			left.pop_front();
+			left.push_back(pop);
+			tmp1 += 1;
+		}
+		int tmp2 = 0;
+		while (1) {
+			if (right[0] == cur_element) {
+				right.pop_front();
+				break;
+			}
+			int pop = right.back();
+			right.pop_back();
+			right.push_front(pop);
+			tmp2 += 1;
+		}
+		if (tmp1 > tmp2) {
+			ans += tmp2;
+			de = right;
+		}
+		else {
+			ans += tmp1;
+			de = left;
+		}
+	}
+	cout << ans << '\n';
+	return 0;
+}
