@@ -1,0 +1,94 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include<queue>
+#include<cstring>
+using namespace std;
+typedef pair<int, int> P;
+int dx[] = { -1,1,0,0 };
+int dy[] = { 0,0,-1,1 };
+int n, m;
+int ans = -1;
+vector<P> virus;
+int mp1[10][10], mp2[10][10];
+bool visited[10][10];
+void Cnt() {
+	int tmp = 0;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			if (mp2[i][j] == 0)tmp += 1;
+		}
+	}
+	ans = max(ans, tmp);
+}
+void BFS() {
+	queue<P> qu;
+	memset(visited, false, sizeof(visited));
+	for (int i = 0; i < virus.size(); i++) {
+		qu.push(virus[i]);
+		visited[virus[i].first][virus[i].second] = true;
+	}
+	while (!qu.empty()) {
+		int x = qu.front().first;
+		int y = qu.front().second;
+		qu.pop();
+		for (int dir = 0; dir < 4; dir++) {
+			int nx = x + dx[dir];
+			int ny = y + dy[dir];
+			if (nx < 0 || nx >= n || ny < 0 || ny >= m)continue;
+			if (mp2[nx][ny] == 0 && visited[nx][ny] == false) {
+				visited[nx][ny] = true;
+				qu.push(P(nx, ny));
+				mp2[nx][ny] = 2;
+			}
+		}
+	}
+}
+void Copy() {
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			mp2[i][j] = mp1[i][j];
+		}
+	}
+}
+void CheckMap() {
+	Copy();
+	BFS();
+	Cnt();
+}
+void MakeWall() {
+	int x1, x2, x3, y1, y2, y3;
+	for (int i1 = 0; i1 < n * m; i1++) {
+		for (int i2 = 0; i2 < n * m; i2++) {
+			for (int i3 = 0; i3 < n * m; i3++) {
+				if (i1 == i2 || i1 == i3 || i2 == i3)continue;
+				x1 = i1 / m, x2 = i2 / m, x3 = i3 / m;
+				y1 = i1 % m, y2 = i2 % m, y3 = i3 % m;
+				if (!mp1[x1][y1] && !mp1[x2][y2] && !mp1[x3][y3]) {
+					mp1[x1][y1] = 1, mp1[x2][y2] = 1, mp1[x3][y3] = 1;
+					CheckMap();
+					mp1[x1][y1] = 0, mp1[x2][y2] = 0, mp1[x3][y3] = 0;
+				}
+			}
+		}
+	}
+}
+void Input() {
+	cin >> n >> m;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> mp1[i][j];
+			if (mp1[i][j] == 2) {
+				virus.push_back(P(i, j));
+			}
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	Input();
+	MakeWall();
+	cout << ans << '\n';
+	return 0;
+}
