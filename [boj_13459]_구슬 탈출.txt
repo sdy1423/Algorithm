@@ -1,0 +1,91 @@
+#include<queue>
+#include<iostream>
+#include<algorithm>
+using namespace std;
+int n, m;
+int dx[] = {-1,1,0,0};
+int dy[] = {0,0,-1,1};
+char map[11][11];
+pair<int, int> red, blue;
+struct MARBLE {
+	int rx, ry, bx, by, cnt;
+};
+bool Move() {
+	queue <MARBLE> qu;
+	qu.push({ red.first,red.second,blue.first,blue.second,0 });
+	while (!qu.empty()) {
+		int rx = qu.front().rx, ry = qu.front().ry;
+		int bx = qu.front().bx, by = qu.front().by;
+		int cnt = qu.front().cnt;
+		qu.pop();
+		if (cnt > 10)continue;
+		for (int dir = 0; dir < 4; dir++) {
+			int nrx, nry, nbx, nby, nnrx, nnry, nnbx, nnby;
+			nrx = rx, nry = ry, nbx = bx, nby = by;
+			while (1) {
+				nnrx = nrx + dx[dir], nnry = nry + dy[dir];
+				if (map[nnrx][nnry] == '#') {
+					nnrx = nrx, nnry = nry;
+					break;
+				}
+				else if (map[nnrx][nnry] == 'O') {
+					break;
+				}
+				nrx = nnrx, nry = nnry;
+			}
+			while (1) {
+				nnbx = nbx + dx[dir], nnby = nby + dy[dir];
+				if (map[nnbx][nnby] == '#') {
+					nnbx = nbx, nnby = nby;
+					break;
+				}
+				else if (map[nnbx][nnby] == 'O') {
+					break;
+				}
+				nbx = nnbx, nby = nnby;
+			}
+			if (map[nnbx][nnby] == 'O')continue;
+			if (map[nnrx][nnry] == 'O') {
+				if (cnt + 1 <= 10)return true;
+				else continue;
+			}
+			if (nnrx == nnbx && nnry == nnby) {
+				int rSub = abs(nnrx - rx) + abs(nnry - ry);
+				int bSub = abs(nnbx - bx) + abs(nnby - by);
+				if (rSub > bSub) {
+					nnrx -= dx[dir], nnry -= dy[dir];
+				}
+				else {
+					nnbx -= dx[dir], nnby -= dy[dir];
+				}
+			}
+			qu.push({ nnrx,nnry,nnbx,nnby,cnt + 1 });
+		}
+	}
+	return false;
+}
+void Input() {
+	cin >> n >> m;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> map[i][j];
+			if (map[i][j] == 'R') {
+				red = { i,j };
+				map[i][j] = '.';
+			}
+			if (map[i][j] == 'B') {
+				blue = { i,j };
+				map[i][j] = '.';
+			}
+		}
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); 
+	cout.tie(nullptr);
+	Input();
+	if (Move())cout << 1 << '\n';
+	else cout << 0 << '\n';
+	return 0;
+}
