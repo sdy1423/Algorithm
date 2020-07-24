@@ -1,0 +1,76 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+int m, n, h, ans;
+int map[101][101][101];
+bool visited[101][101][101];
+int dx[] = {-1,1,0,0,0,0}; //n
+int dy[] = {0,0,-1,1,0,0}; //m
+int dz[] = {0,0,0,0,-1,1}; //h
+struct TOMATO {
+	int h, n, m, day;
+};
+queue<TOMATO> qu;
+bool Bfs() {
+	while (!qu.empty()) {
+		int hh = qu.front().h;
+		int nn = qu.front().n;
+		int mm = qu.front().m;
+		int day = qu.front().day;
+		qu.pop();
+		for (int dir = 0; dir < 6; dir++) {
+			int nhh = hh + dz[dir];
+			int nnn = nn + dx[dir];
+			int nmm = mm + dy[dir];
+			if (nhh < 0 || nnn < 0 || nmm < 0 || nhh >= h || nnn >= n || nmm >= m)continue;
+			if (map[nhh][nnn][nmm] == 0) {
+				map[nhh][nnn][nmm] = 1;
+				qu.push({ nhh,nnn,nmm,day + 1 });
+				ans = day + 1;
+			}
+		}
+	}
+	bool ok = false;
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < n; j++) {
+			for (int k = 0; k < m; k++) {
+				if (!map[i][j][k]) {
+					ok = true;
+					break;
+				}
+			}
+			if (ok)break;
+		}
+		if (ok)break;
+	}
+	if (ok)return false;
+	else return true;
+}
+bool Input() {
+	cin >> m >> n >> h;
+	bool ok = false;
+	for (int i = 0; i < h; i++) {
+		for (int j = 0; j < n; j++) {
+			for (int k = 0; k < m; k++) {
+				cin >> map[i][j][k];
+				if (!map[i][j][k]) {
+					ok = true;
+				}
+				if (map[i][j][k] == 1) {
+					qu.push({ i,j,k,0 });
+				}
+			}
+		}
+	}
+	if (ok)return true;
+	else return false;
+}
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	if (!Input())cout << 0 << '\n';
+	else {
+		if (!Bfs())cout << -1 << '\n';
+		else cout << ans << '\n';
+	}
+	return 0;
+}
