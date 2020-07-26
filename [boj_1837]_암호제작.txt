@@ -1,0 +1,43 @@
+package algorithm;
+import java.io.*;
+import java.util.StringTokenizer;
+
+
+public class Main {
+	static String p,ans="";
+	static int k;
+
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		StringTokenizer st = new StringTokenizer(br.readLine());	
+		p = st.nextToken();
+		k = Integer.parseInt(st.nextToken()); 
+		boolean[] num = new boolean[1000001];
+		for(int i=2;i<k;i++) {
+			if(num[i])continue;
+			if(Check(i)) {
+				ans="BAD "+i;
+				break;
+			}
+			for(int j=i+i;j<k;j=j+i) {
+				num[j]=true;
+			}
+		}
+		if(ans.equals(""))ans="GOOD";
+		bw.write(ans);
+		bw.flush();
+		bw.close();
+	}
+	
+	
+	public static boolean Check(int n) {
+		int ret = 0;
+		for(int i=0;i<p.length();i++) {
+			ret = (ret*10 + (p.charAt(i)-'0'))%n;
+		}
+		if(ret==0)return true;
+		else return false;
+	}
+}
+
