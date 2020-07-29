@@ -1,0 +1,45 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+int n, high[100001];
+int Find(int s, int e) {
+	if (s + 1 == e)return high[s];
+	int m = (s + e) / 2;
+	int rst = max(Find(s, m), Find(m, e));
+	rst = max(rst, high[m]);
+	int l = m, r = m, l_h=high[m], r_h=high[m], h = high[m], v;
+	while (1) {
+		if (l > s && r < e - 1) {
+			l_h = min(h, high[l - 1]);
+			r_h = min(h, high[r + 1]);
+			if (r_h >= l_h) r += 1, h = r_h;
+			else l -= 1, h = l_h;
+		}
+		else if (l > s && r == e - 1) {
+			l_h = min(h, high[--l]);
+			h = l_h;
+		}
+		else {
+			r_h = min(h, high[++r]);
+			h = r_h;
+		}
+		v = (r - l + 1) * h;
+		rst = max(rst, v);
+		if (l == s && r == e - 1)break;
+	}
+	return rst;
+}
+void Input() {
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> high[i];
+	}
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	Input();
+	cout << Find(0, n) << '\n';
+	return 0;
+}
+
