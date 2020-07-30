@@ -1,0 +1,19 @@
+#include<iostream>
+using namespace std;
+typedef long long ll;
+ll A, C, B;
+ll go(ll a,ll b) {
+	if (b == 0)return 1;
+	ll tmp = go(a, b / 2);
+	ll ans = tmp * tmp % C;
+	if (b % 2 == 1) ans = ans * a % C;
+	return ans;
+}
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
+	cin >> A >> B >> C;
+	cout << go(A, B) << '\n';
+	return 0;
+}
