@@ -1,0 +1,112 @@
+package algorithm;
+import java.io.*;
+import java.util.*;
+//10시 41분 특정한 최단 경로
+
+public class Main {
+
+	static int INF = 87_654_321;
+	static int n,e,a,b,c,v1,v2;
+	static List<Load> list[];
+	static int dist[];
+	static boolean visited[];
+	
+	public static void main(String[] args) throws IOException {
+		InputStreamReader isr = new InputStreamReader(System.in);
+		BufferedReader br = new BufferedReader(isr);
+		OutputStreamWriter osw = new OutputStreamWriter(System.out);
+		BufferedWriter bw = new BufferedWriter(osw);
+		StringTokenizer st;
+
+		st = new StringTokenizer(br.readLine());
+		n = Integer.parseInt(st.nextToken());
+		e = Integer.parseInt(st.nextToken());
+		
+		list = new ArrayList[n+1];
+		dist = new int[n+1];
+		visited = new boolean[n+1];
+		
+		for(int i=0;i<=n;i++) {
+			list[i] = new ArrayList<>();
+		}
+		
+		for(int i=0;i<e;i++) {
+			st = new StringTokenizer(br.readLine());
+			a = Integer.parseInt(st.nextToken());
+			b = Integer.parseInt(st.nextToken());
+			c = Integer.parseInt(st.nextToken());
+			list[a].add(new Load(b,c));
+			list[b].add(new Load(a,c));
+		}
+		
+		st = new StringTokenizer(br.readLine());
+		v1 = Integer.parseInt(st.nextToken());
+		v2 = Integer.parseInt(st.nextToken());
+		
+		// 1 -> v1 -> v2 -> n;
+		// 1 -> v2 -> v1 -> n;
+		int result = Answer();
+		bw.write(result+"\n");
+		
+		bw.close();
+		br.close();
+	}
+	
+	public static int Answer() {
+		
+		int tmp1=0,tmp2=0;
+		tmp1 += FindMinDist(1,v1);
+		tmp1 += FindMinDist(v1,v2);
+		tmp1 += FindMinDist(v2,n);
+		
+		tmp2 += FindMinDist(1,v2);
+		tmp2 += FindMinDist(v2,v1);
+		tmp2 += FindMinDist(v1,n);
+		
+		int rst = Math.min(tmp1, tmp2); 
+		if(rst>=INF) rst=-1;
+		return rst;
+	}
+	
+	public static int FindMinDist(int start,int end) {
+		Arrays.fill(dist, INF);
+		Arrays.fill(visited, false);
+		PriorityQueue<Load> pq = new PriorityQueue<>();
+		dist[start]=0;
+		pq.add(new Load(start,0));
+		while(!pq.isEmpty()) {
+			Load cur = pq.poll();
+			int curNode = cur.num;
+			int curWeight = cur.weight;
+			if(visited[curNode])continue;
+			visited[curNode]=true;
+			for(int i=0;i<list[curNode].size();i++) {
+				int nextNode = list[curNode].get(i).num;
+				int nextWeight = list[curNode].get(i).weight;
+				if(!visited[nextNode] && dist[nextNode]>curWeight+nextWeight) {
+					dist[nextNode]=curWeight+nextWeight;
+					pq.offer(new Load(nextNode,dist[nextNode]));
+				}
+			}
+		}
+		return dist[end];
+	}
+}
+class Load implements Comparable<Load>{
+	int num,weight;
+	
+	public Load(int num,int weight) {
+		super();
+		this.num=num;
+		this.weight=weight;
+	}
+	
+	@Override
+	public int compareTo(Load target) {
+		if(this.weight>target.weight) {
+			return 1;
+		}else {
+			return -1;
+		}
+	}
+}
