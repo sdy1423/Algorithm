@@ -1,0 +1,27 @@
+#include<iostream>
+using namespace std;
+int N, M, K, a,b,c,d, map[301][301];
+int main() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr); cout.tie(nullptr);
+	cin >> N >> M;
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= M; j++) {
+			cin >> map[i][j];
+			if (j != 1) {
+				map[i][j] += map[i][j - 1];
+			}
+		}
+	}
+	cin >> K;
+	for (int i = 0; i < K; i++) {
+		cin >> a >> b >> c >> d;
+		int sum = 0;
+		for (int j = a; j <= c; j++) {
+			sum += map[j][d];
+			sum -= map[j][b - 1];
+		}
+		cout << sum << '\n';
+	}
+	return 0;
+}
