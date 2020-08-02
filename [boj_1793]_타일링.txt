@@ -1,0 +1,41 @@
+#include<iostream>
+#include<string>
+using namespace std;
+int n;
+string dp[251];
+string function(int a, int b) {
+	string tmp1 = dp[a], tmp2 = dp[b], tmp = "";
+	int up = 0, mul, sub, sum;
+	for (int i = tmp2.size() - 1; i >= 0; i--) {
+		mul = (tmp2[i] - '0') * 2;
+		tmp2[i] = (mul + up) % 10 + '0';
+		up = (mul + up) / 10;
+	}
+	if (up)tmp2 = to_string(up) + tmp2;	
+	sub = tmp1.size() - tmp2.size();
+	for (int i = 0; i < sub; i++) tmp += "0";
+	if (sub) tmp2 = tmp + tmp2;
+	else if(sub<0)tmp1 = tmp + tmp1;
+	up = 0;
+	string rst = tmp1;
+	for (int i = tmp1.size() - 1; i >= 0; i--) {
+		sum = ((tmp1[i] - '0') + (tmp2[i] - '0'));
+		rst[i] = (sum + up) % 10 + '0';
+		up = (sum + up) / 10;
+	}
+	if (up) rst = to_string(up) + rst;
+	return rst;
+}
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	dp[0]="1",dp[1] = "1", dp[2] = "3";
+	for (int i = 3; i <= 250; i++) {
+		dp[i] = function(i - 1, i - 2);
+	}
+	while (1) {
+		cin >> n;
+		if (cin.fail() != false)break;
+		cout << dp[n] << '\n';
+	}
+	return 0;
+}
