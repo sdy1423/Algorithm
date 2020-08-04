@@ -1,0 +1,32 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+int n, w[17][17], INF = 987654321;
+int dist[1 << 17][17]; 
+int tsp(int visit, int now) {
+	visit |= (1 << now);
+	if (visit == ((1 << n) - 1)) {
+		if (dist[visit][now])return dist[visit][now];
+		if (w[now][0])return dist[visit][now] = w[now][0];
+		else return INF;
+	}
+	if (dist[visit][now])return dist[visit][now];
+	int rst = INF;
+	for (int i = 0; i < n; i++) {
+		if (visit & (1 << i))continue;
+		if (!w[now][i]) continue;
+		rst = min(rst,tsp(visit, i) + w[now][i]);
+	}
+	return dist[visit][now] = rst;
+}
+int main() {
+	ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr);
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> w[i][j];
+		}
+	}
+	cout << tsp(0, 0) << '\n';
+	return 0;
+}
