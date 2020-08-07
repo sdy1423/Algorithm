@@ -1,0 +1,28 @@
+#include<iostream>
+#include<map>
+#include<stdlib.h>
+#include<string>
+using namespace std;
+int n, m;
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0), cout.tie(0);
+	cin >> n >> m;
+	map<int, string> poketmon1;
+	map<string, int>poketmon2;
+	string str, str2;
+	for (int i = 1; i <= n; i++) {
+		cin >> str;
+		poketmon1[i] = str;
+		poketmon2[str] = i;
+	}
+	for (int i = 0; i < m; i++) {
+		cin >> str2;
+		if (str2[0] >= 'A') cout << poketmon2[str2] << '\n';
+		else {
+			int tmp = stoi(str2);
+			cout << poketmon1[tmp] << '\n';
+		}
+	}
+	return 0;
+}
