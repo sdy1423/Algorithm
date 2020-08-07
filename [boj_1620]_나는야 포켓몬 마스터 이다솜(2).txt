@@ -1,0 +1,42 @@
+#include<vector>
+#include<iostream>
+#include<map>
+#include<algorithm>
+#include<stdlib.h>
+#include<string>
+using namespace std;
+int n, m;
+int main() {
+	ios_base::sync_with_stdio(0);
+	cin.tie(0), cout.tie(0);
+	cin >> n >> m;
+	map<int, string> poketmon1;
+	vector<pair<string, int>> poketmon2(n);
+	string str, str2;
+	for (int i = 1; i <= n; i++) {
+		cin >> str;
+		poketmon1[i] = str;
+		poketmon2[i - 1] = { str,i };
+	}
+	sort(poketmon2.begin(), poketmon2.end());
+	for (int i = 0; i < m; i++) {
+		cin >> str2;
+		if (str2[0] >= 'A') {
+			int s = 0, e = n - 1;
+			while (s <= e) {
+				int mid = (s + e) / 2;
+				if (poketmon2[mid].first == str2) {
+					cout << poketmon2[mid].second << '\n';
+					break;
+				}
+				else if (poketmon2[mid].first > str2) e = mid - 1;
+				else s = mid + 1;
+			}
+		}
+		else {
+			int tmp = stoi(str2);
+			cout << poketmon1[tmp] << '\n';
+		}
+	}
+	return 0;
+}
