@@ -20,11 +20,9 @@ int main() {
 	for (int i = 0; i < k; i++) {
 		a = info[i].first, b = info[i].second;
 		if (a == 1) {
-			if (Need[b] <= Cnt[b]) {
-				MyCnt[b]++;
-				for (int i = 0; i < V[b].size(); i++) {
-					Cnt[V[b][i]] += 1;
-				}
+			if (Need[b] == Cnt[b]) {
+				if (++MyCnt[b] == 1)
+					for (int v : V[b]) Cnt[v]++;
 			}
 			else {
 				cout << "Lier!" << '\n';
@@ -32,7 +30,11 @@ int main() {
 			}
 		}
 		else {
-			if (MyCnt[b] > 0)MyCnt[b]--;
+			if (MyCnt[b] > 0) {
+				if (--MyCnt[b] == 0) {
+					for (int v : V[b])Cnt[v]--;
+				}
+			}
 			else {
 				cout << "Lier!" << '\n';
 				return 0;
